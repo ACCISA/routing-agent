@@ -24,9 +24,10 @@ start_listener(int port)
 {
 	int server_fd, new_socket;
 	struct sockaddr_in address;
-	int addrlen = sizeof(address)
+	int addrlen = sizeof(address);
 	int instruction;
-	int valread, received_number;
+	int valread;
+	message_t* msg;
 	
 	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
 		printf("Failed to create server socket\n");
@@ -54,7 +55,7 @@ start_listener(int port)
 		return;
 	}
 
-	valread = read(new_socket, &instruction, sizeof(instruction));
+	valread = read(new_socket, &msg, sizeof(msg));
 	if (valread < 0) {
 		printf("Failed to read instruction\n");
 		return;

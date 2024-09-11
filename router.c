@@ -9,12 +9,12 @@
 // the routing table is a linked list where each node has a destination and next hop
 
 void
-add_route_entry(entry_t* entry_head, entry_t* new_entry)
+add_route_entry(entry_t** entry_head, entry_t* new_entry)
 {
 	printf("Added new routing entry\n");
-	entry_t* entry_temp = entry_head->next_entry;
-	entry_head->next_entry = new_entry;
-	new_entry->next_entry = entry_temp;
+	new_entry->next_entry = *entry_head;
+	*entry_head = new_entry;
+
 }
 
 entry_t*
@@ -79,6 +79,10 @@ find_next_hop(entry_t* entry_head, int destination)
 void
 forward_next_hop(entry_t* entry, int instruction)
 {
+	message_t* msg = (message_t*)malloc(sizeof(message_t));
+	msg->instruction = instruction;
+	msg->destination = entry->destination;
+
 	int sock;
 	struct sockaddr_in server_addr;
 	
@@ -91,7 +95,8 @@ forward_next_hop(entry_t* entry, int instruction)
 	server_addr.sin_port = htons(entry->port);
 
 	if (inet_pton(AF_INET, entry->ip_addr, &server_addr.sin_addr) <= 0) {
-		printf("Invalid agent address\n");
+		printf("Invalid agent address %s, FAIL\n", entry->ip_addr);
+		printf("dst %d\n",entry->destination);
 		return;
 	}
 
@@ -106,7 +111,7 @@ forward_next_hop(entry_t* entry, int instruction)
 	
 	printf("Connected to agent\n");
 
-	if (send(sock, &instruction, sizeof(instruction), 0) < 0) {
+	if (send(sock, &msg, sizeof(msg), 0) < 0) {
 		printf("Failed to send instruction to agent\n");
 		return;
 	}
@@ -120,7 +125,26 @@ forward_next_hop(entry_t* entry, int instruction)
 }
 
 void
-main(void)
+main(int argc, char *argv[])
 {
-	entry_t* entry = read_config("config");
+	if (argc != 3) {
+		printf("missing arguments");
+		return;
+	}
+
+	int port = atoi(argv[1]);
+	char *config_file = argv[2];
+
+	entry_t* entry = read_config(config_file);
+	
+	if (entry == NULL) {
+		printf("Failed to read config file\n");
+		return;
+	}
+	
+	entry_t* next_entry = find_next_hop(entry, 2);
+	forward_next_hop(next_entry, 1);
+
+	start_listener(port);
+
 }

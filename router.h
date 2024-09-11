@@ -6,10 +6,16 @@ typedef struct entry {
 	char* ip_addr;
 } entry_t;
 
-void add_route_entry(entry_t* entry_head, entry_t* new_entry);
+typedef struct message {
+	int instruction;
+	int destination;
+} message_t;
+
+void add_route_entry(entry_t** entry_head, entry_t* new_entry);
 entry_t* create_route_entry(int destination, int next_hop, char* ip_addr, int port);
 void display_route_table(entry_t* entry_head);
 entry_t* find_next_hop(entry_t* entry_head, int destination);
+void forward_next_hop(entry_t* entry, int instruction);
 
 entry_t* parse_line(char* line);
 entry_t* read_config(const char* config_path);
