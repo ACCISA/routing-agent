@@ -13,3 +13,7 @@ entry_t* find_next_hop(entry_t* entry_head, int destination);
 
 entry_t* parse_line(char* line);
 entry_t* read_config(const char* config_path);
+
+void start_listener(int port);
+void send_response(void);
+void process_instruction(int instruction);
