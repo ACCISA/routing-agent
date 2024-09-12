@@ -7,15 +7,28 @@
 #include "router.h"
 
 void
-process_instruction(int instruction)
+process_instruction(message_t* msg)
 {
 	// TODO
-	if (instruction == 1) {
+	if (msg->instruction == 1) {
 		// route instruction to next hop
 		printf("Routing instruction");
-
 	}
+	if (msg->instruction == 2) {
+		char hostname[100];
 
+		if (gethostname(hostname, sizeof(hostname)) != 0) {
+			printf("Failed to get hostname");
+			return;
+		}
+		printf("hostname: %s\n", hostname);
+		printf("Sending response back to id: %d\n", msg->source);
+		entry_t* entry = find_next_hop(routing_table,msg->source);
+		forward_next_hop(entry, 3, source, hostname);
+	}
+	if (msg->instruction == 3) {
+		printf("Action response: %s\n", msg->data);
+	}	
 
 }
 
@@ -55,12 +68,13 @@ start_listener(int port)
 		return;
 	}
 
-	valread = read(new_socket, &msg, sizeof(msg));
+	valread = read(new_socket, msg, sizeof(msg));
 	if (valread < 0) {
 		printf("Failed to read instruction\n");
 		return;
 	} else {
-		printf("Received instruction: %d\n", instruction);
+		printf("Received instruction: %d\n", msg->instruction);
+		process_instruction(msg);
 	}
 	
 	close(new_socket);

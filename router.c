@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -6,6 +7,8 @@
 
 #include "router.h"
 
+entry_t* routing_table;
+int source;
 // the routing table is a linked list where each node has a destination and next hop
 
 void
@@ -77,11 +80,19 @@ find_next_hop(entry_t* entry_head, int destination)
 }
 
 void
-forward_next_hop(entry_t* entry, int instruction)
+forward_next_hop(entry_t* entry, int instruction, int source, char* data)
 {
 	message_t* msg = (message_t*)malloc(sizeof(message_t));
 	msg->instruction = instruction;
 	msg->destination = entry->destination;
+	msg->source = source;
+	
+	if (data != NULL) {
+		printf("Sending with data\n");
+		msg->data = (char*)malloc(sizeof(char)*strlen(data));
+		strncpy(msg->data, data, strlen(data));
+		printf("Data: %s\n", msg->data);
+	}
 
 	int sock;
 	struct sockaddr_in server_addr;
@@ -111,7 +122,7 @@ forward_next_hop(entry_t* entry, int instruction)
 	
 	printf("Connected to agent\n");
 
-	if (send(sock, &msg, sizeof(msg), 0) < 0) {
+	if (send(sock, msg, sizeof(msg), 0) < 0) {
 		printf("Failed to send instruction to agent\n");
 		return;
 	}
@@ -127,24 +138,27 @@ forward_next_hop(entry_t* entry, int instruction)
 void
 main(int argc, char *argv[])
 {
-	if (argc != 3) {
+	if (argc != 5) {
 		printf("missing arguments");
+		printf("./router <port> <config> <id> <action>\n");
 		return;
 	}
 
 	int port = atoi(argv[1]);
 	char *config_file = argv[2];
-
-	entry_t* entry = read_config(config_file);
 	
-	if (entry == NULL) {
+	source = atoi(argv[3]);
+	routing_table = read_config(config_file);
+	
+	if (routing_table == NULL) {
 		printf("Failed to read config file\n");
 		return;
 	}
-	
-	entry_t* next_entry = find_next_hop(entry, 2);
-	forward_next_hop(next_entry, 1);
-
+	if (atoi(argv[4]) == 1) {
+		printf("Sending upon  startup\n");
+		entry_t* next_entry = find_next_hop(routing_table, 2);
+		forward_next_hop(next_entry, 2, source, NULL);
+	}
 	start_listener(port);
 
 }
