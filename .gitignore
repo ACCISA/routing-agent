@@ -1,5 +1,6 @@
 .*.swp
 *.o
+*/test_queue
 *.gdb_history
 bin/
 obj/
