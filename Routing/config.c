@@ -27,8 +27,6 @@ build_entry(char* token, entry_t* entry)
 
 	print_entry(entry);
 	return 0;
-
-
 }
 
 entry_t*
