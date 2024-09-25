@@ -1,4 +1,4 @@
-SRC_DIRS := Routing Utils
+SRC_DIRS := Routing Utils Queue
 OBJ_DIR := obj
 BIN_DIR := bin
 

@@ -102,7 +102,7 @@ void HandleEvents(void)
    const size_t noOfHandles = buildPollArray(fds);
 
    /* Inoke the synchronous event demultiplexer.*/
-   if(0 < poll(fds, noOfHandles, INFTIM)){
+   if(0 < poll(fds, noOfHandles, 1000)){
       /* Identify all signalled handles and invoke the event handler associated with each one. */
       dispatchSignalledHandles(fds, noOfHandles);
      }
