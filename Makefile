@@ -1,9 +1,9 @@
-SRC_DIRS := Routing Utils Queue
+SRC_DIRS := Routing Crypt Utils Queue
 OBJ_DIR := obj
 BIN_DIR := bin
 
 CC := gcc
-CFLAGS := -Wall
+CFLAGS := -Wall -lssl -lcrypto
 
 SRC := $(shell find $(SRC_DIRS) -name '*.c')
 OBJ := $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRC))
