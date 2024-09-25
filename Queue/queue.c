@@ -11,24 +11,30 @@ create_job(char* task_name, void (*task_func)(int n, ...), void (*task_cb)(int n
 	new_job->task_func = task_func;
 	new_job->task_cb = task_cb;
 	new_job->next_job = NULL;
-
+	
+	print_info("Created job");
 	return new_job;
 }
 
 void
 add_job(rqueue_t* reactor_queue, job_t* new_job, int priority)
 {
-	job_t* job_head = reactor_queue->job_head;
+	if (reactor_queue->job_head == NULL) {
+		reactor_queue->job_head = new_job;
+		print_info("Added job to empty queue");
+		return;
+	}
+
 
 	if (priority == 1) {
-		new_job->next_job = job_head;
-		job_head = new_job;
+		new_job->next_job = reactor_queue->job_head;
+		reactor_queue->job_head = new_job;
 		reactor_queue->size += 1;
 		print_info("Added high priority job to queue");
 		return;
 	}
 
-	job_t* temp_job = job_head;
+	job_t* temp_job = reactor_queue->job_head;
 
 	while (temp_job != NULL) {
 		if (temp_job->next_job == NULL) {
@@ -40,17 +46,35 @@ add_job(rqueue_t* reactor_queue, job_t* new_job, int priority)
 	}
 }
 
+void
+display_reactor_queue(rqueue_t* reactor_queue)
+{
+	if (reactor_queue->job_head == NULL) {
+		print_error("Reactor emtpy, unable to display");
+		return;
+	}
+
+	print_info("Displaying reactor queue:");
+
+	job_t* temp_job = reactor_queue->job_head;
+	
+	while (temp_job != NULL) {
+		printf("task_name: %s\n", temp_job->task_name);
+		temp_job = temp_job->next_job;
+	}
+}
+
 job_t*
 get_job(rqueue_t* reactor_queue)
 {
-	job_t* job_head = reactor_queue->job_head;
 
-	if (job_head == NULL) {
+	if (reactor_queue->job_head == NULL) {
 		print_error("Empty reactor queue");
+		return NULL;
 	}
 
-	job_t* temp_job = job_head;
-	job_head = job_head->next_job;
+	job_t* temp_job = reactor_queue->job_head;
+	reactor_queue->job_head = reactor_queue->job_head->next_job;
 
 	reactor_queue->size -= 1;
 	print_info("Popped job from reactor queue");
