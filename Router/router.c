@@ -53,10 +53,17 @@ populate_next_agent_hops(char** tokens, char*** agent_hops, int agent_hop_count)
 	return 0;
 }
 
+void
+build_route_sequence(char* hop_sequence, int seq_len,int agent_hop_count, int agent_hop_progress, int instruction)
+{
+	
+}
+
 int
 process_route_sequence(char* sequence)
 {
 	int token_count;
+	int orig_sequence_len = strlen(sequence);
 	char** tokens = malloc(sizeof(char*)*MAX_HOPS+3);
 
 	if (tokens == NULL) {
@@ -73,21 +80,38 @@ process_route_sequence(char* sequence)
 	print_info("ROUTER - Tokenised route sequence");
 
 	int agent_hop_count = atoi(tokens[0]);
+	int agent_hop_progress = atoi(tokens[token_count-2]);
+	int instruction = atoi(tokens[token_count-1]);
+
+	print_info("ROUTER - Messae info:");
+	printf("[+] ROUTER - agent_hop_count: %d\n", agent_hop_count);
+	printf("[+] ROUTER - agent_hop_progress: %d\n", agent_hop_progress);
+	printf("[+] ROUTER - instruction: %d\n", instruction);
 
 	char** next_agent_hops;
 
 	print_info("ROUTER - Populating next agent hops");
-	if (populate_next_agent_hops(tokens, &next_agent_hops, agent_hop_count) != 0) {
+	if (populate_next_agent_hops(tokens, &next_agent_hops, agent_hop_count, removed_len) != 0) {
 		print_error("ROUTER - Failed to populate agent hops");
 		return -1;
 	}	
 
-	printf("[+] ROUTER - Next hop to route: %s\n", next_agent_hops[0]);
+	int removed_len = strlen(tokens[1]);
 
-	if (find_next_hop(next_agent_hops[0]) != 0) {
+	printf("[+] ROUTER - Next hop to route through: %s\n", next_agent_hops[0]);
+	
+	peer_t* next_peer;
+
+	if ((next_peer = find_peer_info(next_agent_hops[0])) == NULL) {
 		print_error("ROUTER - Failed to find next hop information");
 		return -1;
 	}
+	
+	display_peer_info(next_peer);
+
+	// TODO rebuild the route sequence with the updated information for the next hop
+
+	
 
 	return 0;
 }

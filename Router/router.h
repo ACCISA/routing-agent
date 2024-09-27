@@ -1,3 +1,6 @@
+#ifndef ROUTER_H
+#define ROUTER_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,5 +17,9 @@ void forward_instruction(char* instruction);
 int is_target(char* agent_name);
 
 void display_peer_info(peer_t* peer);
-void add_route_entry(peer_t* new_peer);
+void add_peer_entry(peer_t* new_peer);
 peer_t* create_peer_entry(char* ip_addr, int port, char* agent_name);
+peer_t* remove_peer_entry(char* agent_name);
+peer_t* find_peer_info(char* agent_name);
+
+#endif
