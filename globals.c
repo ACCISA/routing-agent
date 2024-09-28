@@ -1,24 +1,28 @@
 #include "globals.h"
 #include "Utils/utils.h"
+#include "Utils/error.h"
 
 AgentInfo* Agent = NULL;
 
 void
 initialize_agent_info(void)
 {
-	print_info("GLOBAL - Initialize Agent global variable initialized");
-	Agent = (AgentInfo*)malloc(sizeof(AgentInfo*));
+	print_info("GLOBAL - Agent global variable initialized");
+	Agent = (AgentInfo*)malloc(sizeof(AgentInfo));
 	Agent->agent_name = (char*)malloc(sizeof(char)*100);
 	Agent->ip_addr = (char*)malloc(sizeof(char)*50);
 	Agent->routing = (routing_t*)malloc(sizeof(routing_t));
 	Agent->routing->size = 0;
-	Agent->routing->table = (peer_t*)malloc(sizeof(peer_t));
+	Agent->routing->table = NULL;
+	Agent->msg_store = (msg_store_t*)malloc(sizeof(msg_store_t*));
+	Agent->msg_store->size = 0;
+	Agent->msg_store->msg = NULL;
 }
 
 int
 is_agent_init(void)
 {
-	if (Agent == NULL || Agent->routing == NULL) {
+	if (Agent == NULL || Agent->routing == NULL || Agent->msg_store == NULL) {
 		print_info("GLOBAL - Agent was not intialized first");
 		return 0;
 	}

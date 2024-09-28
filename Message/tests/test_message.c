@@ -1,7 +1,8 @@
-#include "../router.h"
+#include "../../Router/router.h"
 #include "../../globals.h"
 #include "../../Utils/utils.h"
 #include "../../Utils/error.h"
+#include "../../Message/message.h"
 
 
 int main(void)
@@ -27,37 +28,35 @@ int main(void)
 	display_peer_info(peer1);
 	display_peer_info(peer2);
 	display_peer_info(peer3);
-	display_peer_info(peer4);
 
 	add_peer_entry(peer1);
 	add_peer_entry(peer2);
 	add_peer_entry(peer4);
 	add_peer_entry(peer3);
-	
-
-
-	remove_peer_entry("A2");
-	display_peer_table();
-	remove_peer_entry("A3");
-	display_peer_table();
-	remove_peer_entry("A4");
-	display_peer_table();
-	remove_peer_entry("A1");
 
 	display_peer_table();
 
-	return;
+	message_t* msg1 = create_message("111", peer1);
+	message_t* msg2 = create_message("222", peer2);
+	message_t* msg3 = create_message("333", peer3);
+	message_t* msg4 = create_message("444", peer4);
 
-	int status = process_route_sequence(sequence);
+	store_message(msg1);
+	store_message(msg2);
+	store_message(msg3);
+	store_message(msg4);
 
-	if (status != 0) {
-		print_info("Failed to run route sequence process test");
-		return 1;
-	}
-	print_info("-----------");
-	//process_route_sequence(sequence2);
-	//print_info("-----------");
-	//process_route_sequence(sequence_invalid);
+	display_message_store();
+
+	remove_message("222");
+	display_message_store();
+	remove_message("333");
+	display_message_store();
+	remove_message("444");
+	display_message_store();
+	remove_message("111");
+
+	display_message_store();
 	
 	return 0;
 

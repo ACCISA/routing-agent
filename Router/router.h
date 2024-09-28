@@ -17,6 +17,7 @@ void forward_instruction(char* instruction);
 int is_target(char* agent_name);
 
 void display_peer_info(peer_t* peer);
+void display_peer_table(void);
 void add_peer_entry(peer_t* new_peer);
 peer_t* create_peer_entry(char* ip_addr, int port, char* agent_name);
 peer_t* remove_peer_entry(char* agent_name);

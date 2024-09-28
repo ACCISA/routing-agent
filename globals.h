@@ -8,6 +8,18 @@ typedef struct peer {
 	struct peer* next_peer;
 } peer_t;
 
+typedef struct message {
+	int id;
+	char* time_sent;
+	peer_t* sender;
+	struct message* next_msg;
+} message_t;
+
+typedef struct message_store {
+	int size;
+	message_t* msg;
+} msg_store_t;
+
 typedef struct routing {
 	int size;
 	peer_t* table;
@@ -18,6 +30,7 @@ typedef struct {
 	int port;
 	char* ip_addr;
 	routing_t* routing;
+	msg_store_t* msg_store;
 } AgentInfo;
 
 

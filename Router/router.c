@@ -91,7 +91,7 @@ process_route_sequence(char* sequence)
 	char** next_agent_hops;
 
 	print_info("ROUTER - Populating next agent hops");
-	if (populate_next_agent_hops(tokens, &next_agent_hops, agent_hop_count, removed_len) != 0) {
+	if (populate_next_agent_hops(tokens, &next_agent_hops, agent_hop_count) != 0) {
 		print_error("ROUTER - Failed to populate agent hops");
 		return -1;
 	}	

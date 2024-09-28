@@ -2,6 +2,7 @@
 *.o
 test_queue
 test_router
+test_message
 test_crypt
 *.gdb_history
 bin/
