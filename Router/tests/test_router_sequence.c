@@ -24,29 +24,13 @@ int main(void)
 	peer_t* peer3 = create_peer_entry("127.0.0.1",3333, "A3");
 	peer_t* peer4 = create_peer_entry("127.0.0.1",4444, "A4");
 
-	display_peer_info(peer1);
-	display_peer_info(peer2);
-	display_peer_info(peer3);
-	display_peer_info(peer4);
-
 	add_peer_entry(peer1);
 	add_peer_entry(peer2);
 	add_peer_entry(peer4);
 	add_peer_entry(peer3);
 	
-
-
-	remove_peer_entry("A2");
-	display_peer_table();
-	remove_peer_entry("A3");
-	display_peer_table();
-	remove_peer_entry("A4");
-	display_peer_table();
-	remove_peer_entry("A1");
-
 	display_peer_table();
 
-	return;
 
 	int status = process_route_sequence(sequence);
 
@@ -54,10 +38,6 @@ int main(void)
 		print_info("Failed to run route sequence process test");
 		return 1;
 	}
-	print_info("-----------");
-	//process_route_sequence(sequence2);
-	//print_info("-----------");
-	//process_route_sequence(sequence_invalid);
 	
 	return 0;
 

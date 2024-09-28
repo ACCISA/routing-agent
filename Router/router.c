@@ -3,6 +3,7 @@
 #define SEQUENCE_DELIMETER ";"
 
 #include "../Router/router.h"
+#include "../Message/message.h"
 #include "../Utils/utils.h"
 #include "../Utils/error.h"
 
@@ -53,16 +54,47 @@ populate_next_agent_hops(char** tokens, char*** agent_hops, int agent_hop_count)
 	return 0;
 }
 
-void
-build_route_sequence(char* hop_sequence, int seq_len,int agent_hop_count, int agent_hop_progress, int instruction)
+char*
+build_forward_route_sequence(char** next_agent_hops, int next_agent_hops_len, int agent_hop_progress, int instruction, char* msg_id)
 {
+	char* result = malloc(MAX_ROUTE_SEQUENCE_LEN*sizeof(char)+1);
+	char prefix[5];
+	char hop_count_str[5];
+	char instruction_str[5];
+
+	if (result == NULL) {
+		print_error("ROUTER - Failed to malloc next route sequence");
+		return NULL;
+	}
+
+	result[0] = '\0';
+
+	sprintf(prefix, "%d;", next_agent_hops_len);
+	strcat(result, prefix);
+
+	for (int i = 0; i < next_agent_hops_len; i++) {
+		strcat(result, next_agent_hops[i]);
+		strcat(result, ";");
+	}
+
+	sprintf(hop_count_str, "%d;", agent_hop_progress+1);
+	strcat(result, hop_count_str);
+
+	sprintf(instruction_str, "%d;", instruction);
+	strcat(result, instruction_str);
 	
+	strcat(result, msg_id);
+	
+	return result;
 }
 
 int
 process_route_sequence(char* sequence)
 {
 	int token_count;
+	peer_t* sender_peer;
+	message_t* return_msg;
+	int is_forward = 1;
 	int orig_sequence_len = strlen(sequence);
 	char** tokens = malloc(sizeof(char*)*MAX_HOPS+3);
 
@@ -77,16 +109,42 @@ process_route_sequence(char* sequence)
 		return -1;
 	}
 
-	print_info("ROUTER - Tokenised route sequence");
+	if (token_count < 5) {
+		printf("[!] ROUTER - Routing sequence is missing elements (failed_sequence=%s)\n", sequence);
+		return -1;
+	}
 
 	int agent_hop_count = atoi(tokens[0]);
-	int agent_hop_progress = atoi(tokens[token_count-2]);
-	int instruction = atoi(tokens[token_count-1]);
+	int agent_hop_progress = atoi(tokens[token_count-3]);
+	int instruction = atoi(tokens[token_count-2]);
+	char* msg_id = tokens[token_count-1];
+	char* sender = tokens[1];
+	
+	if ((return_msg = get_message(msg_id)) != NULL) {
+		is_forward = 0;	
+	}
+	
 
-	print_info("ROUTER - Messae info:");
+
+	print_info("ROUTER - Message info:");
+	printf("[+] ROUTER - sender: %s\n", sender);
+	if (is_forward == 0) {
+		print_info("ROUTER - msg_type: reverse");
+	} else {
+		print_info("ROUTER - msg_type: forward");
+	}
 	printf("[+] ROUTER - agent_hop_count: %d\n", agent_hop_count);
 	printf("[+] ROUTER - agent_hop_progress: %d\n", agent_hop_progress);
 	printf("[+] ROUTER - instruction: %d\n", instruction);
+	printf("[+] ROUTER - msg_id: %s", msg_id);
+
+	// TODO deal with reverse
+	// TODO redo this function, seperate in reverse and forward
+
+	if ((sender_peer = find_peer_info(sender)) == NULL) {
+		printf("[!] ROUTER - Received sequence from agent not in peer list (sender=%s)\n", sender);
+		return -1;
+	}
 
 	char** next_agent_hops;
 
@@ -107,12 +165,22 @@ process_route_sequence(char* sequence)
 		return -1;
 	}
 	
-	display_peer_info(next_peer);
+	char* new_route_sequence = build_forward_route_sequence(next_agent_hops, agent_hop_count-1,
+		       	agent_hop_progress,
+			instruction,
+			msg_id);
 
-	// TODO rebuild the route sequence with the updated information for the next hop
+	if (new_route_sequence == NULL) {
+		print_error("ROUTER - Failed to build new route sequence");
+		return -1;
+	}
 
+
+	printf("[+] ROUTER - New forward route sequence (sequence=%s)\n", new_route_sequence);
 	
-
+	message_t* msg = create_message(msg_id, next_peer);
+	store_message(msg);
+	display_message_store();
 	return 0;
 }
 

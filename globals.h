@@ -1,6 +1,8 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+#define MAX_ROUTE_SEQUENCE_LEN 100
+
 typedef struct peer {
 	char* ip_addr;
 	int port;
