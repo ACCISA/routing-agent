@@ -8,7 +8,19 @@
 #include "../globals.h"
 
 int tokenise_route_sequence(char* sequence, char** tokens, int* token_count);
-int populate_next_agent_hops(char** tokens, char*** agent_hops, int agent_hop_count);
+int populate_reverse_agent_hops(char** tokens, char*** agent_hops, int agent_hop_count);
+int populate_forward_agent_hops(char** tokens, char*** agent_hops, int agent_hop_count);
+char* build_reverse_route_sequence(char** next_agent_hops,
+		int next_agent_hops_len,
+		int agent_hop_progress,
+		char* sender_name,
+		int instruction,
+		char* msg_id);
+char* build_froward_route_sequence(char** next_agent_hops,
+		int next_agent_hops_len,
+		int agent_hop_progress,
+		int instruction,
+		char* msg_id);
 int find_next_hop(char* next_agent);
 int  process_route_sequence(char* sequence);
 char* update_route_sequence(char* sequence);

@@ -32,7 +32,7 @@ display_message_info(message_t* msg)
 }
 
 void
-display_message_store()
+display_message_store(void)
 {
 	printf("-----------------------------------------------\n");
 	if (is_agent_init() == 0) return;
