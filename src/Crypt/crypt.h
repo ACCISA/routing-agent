@@ -6,12 +6,12 @@
 #include <stdlib.h>
 
 
-int encrypt(unsigned char*	data,
+int AES_encrypt(unsigned char*	data,
 		int 		data_len, 
 		unsigned char* 	key, 
 		unsigned char* 	iv, 
 		unsigned char* 	cipher);
-int decrypt(unsigned char* 	cipher,
+int AES_decrypt(unsigned char* 	cipher,
 		int 		cipher_len,
 		unsigned char* 	key,
 		unsigned char* 	iv,

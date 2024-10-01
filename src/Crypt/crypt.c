@@ -3,7 +3,7 @@
 #include "../Utils/error.h"
 
 int
-encrypt(unsigned char* 		data,
+AES_encrypt(unsigned char* 		data,
 		int		data_len,
 		unsigned char*	key,
 		unsigned char*	iv,
@@ -49,7 +49,7 @@ encrypt(unsigned char* 		data,
 
 
 int
-decrypt(unsigned char*		cipher,
+AES_decrypt(unsigned char*		cipher,
 		int		cipher_len,
 		unsigned char* 	key,
 		unsigned char*	iv,

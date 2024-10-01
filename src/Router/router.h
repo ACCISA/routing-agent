@@ -24,7 +24,8 @@ typedef struct RoutingPayload {
 } rpayload_t;
 
 
-int parse_routing_message(unsigned char* data, unsigned char* header_data, unsigned char* payload_data);
+void display_header_info(rheader_t* routing_header);
+int parse_routing_message(unsigned char* data, int data_len, unsigned char* header_data, int* header_len, unsigned char* payload_data, int* payload_len);
 rheader_t* create_routing_header(unsigned char* data);
 rpayload_t* create_routing_payload(unsigned char* data, int32_t num_sections, int32_t* sections_len);
 
@@ -48,6 +49,10 @@ char* update_route_sequence(char* sequence);
 void forward_next_hop(char *sequence);
 void forward_instruction(char* instruction);
 int is_target(char* agent_name);
+
+//routingv2
+void read_routing_seection(char* encrypted_section_sequence, int enc_sequence_len, int is_forward, char* msg_id);
+void process_route_sequence(rheader_t* routing_header, rpayload_t* routing_payload);
 
 void display_peer_info(peer_t* peer);
 void display_peer_table(void);
