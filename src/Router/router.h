@@ -24,6 +24,10 @@ typedef struct RoutingPayload {
 } rpayload_t;
 
 
+int parse_routing_message(unsigned char* data, unsigned char* header_data, unsigned char* payload_data);
+rheader_t* create_routing_header(unsigned char* data);
+rpayload_t* create_routing_payload(unsigned char* data, int32_t num_sections, int32_t* sections_len);
+
 int tokenise_route_sequence(char* sequence, char** tokens, int* token_count);
 int populate_reverse_agent_hops(char** tokens, char*** agent_hops, int agent_hop_count);
 int populate_forward_agent_hops(char** tokens, char*** agent_hops, int agent_hop_count);
