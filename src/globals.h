@@ -31,6 +31,8 @@ typedef struct {
 	char* agent_name;
 	int port;
 	char* ip_addr;
+	char* iv;
+	char* key;
 	routing_t* routing;
 	msg_store_t* msg_store;
 } AgentInfo;
