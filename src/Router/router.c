@@ -169,7 +169,7 @@ build_forward_route_sequence(char** next_agent_hops,
 	
 	return result;
 }
-
+/*
 int
 process_route_sequence(char* sequence)
 {
@@ -279,7 +279,7 @@ process_route_sequence(char* sequence)
 	display_message_store();
 	return 0;
 }
-
+*/
 char*
 update_route_sequence(char* sequence)
 {
@@ -300,7 +300,7 @@ forward_next_instruction(char* instruction)
 }
 
 void
-read_routing_section(char* ecrypted_section_sequence, int enc_sequence_len, int is_forward, char* msg_id)
+read_routing_section(char* encrypted_section_sequence, int enc_sequence_len, int is_forward, char* msg_id)
 {
 
 	char section_sequence[30];
@@ -327,7 +327,7 @@ read_routing_section(char* ecrypted_section_sequence, int enc_sequence_len, int 
 		return;
 	}
 
-	if (strcmp(Agent->agent_name, cur_agent_name, strlen(cur_agent_name)) != 0) {
+	if (strncmp(Agent->agent_name, cur_agent_name, strlen(cur_agent_name)) != 0) {
 		print_error("ROUTER - Failed to validate cur_agent_name from global variable");
 		return;
 	}
@@ -344,7 +344,7 @@ read_routing_section(char* ecrypted_section_sequence, int enc_sequence_len, int 
 			return;
 		}
 
-		if (strcmp(prev_msg->sender, prev_peer->agent_name, strlen(prev_peer->agent_name)) != 0) {
+		if (strncmp(prev_msg->sender, prev_peer->agent_name, strlen(prev_peer->agent_name)) != 0) {
 			print_error("ROUTER - Failed to validate message, prev_peer != msg_peer");
 			return;
 		}
@@ -354,7 +354,7 @@ read_routing_section(char* ecrypted_section_sequence, int enc_sequence_len, int 
 
 }
 
-void
+int
 process_route_sequence(rheader_t* routing_header, rpayload_t* routing_payload)
 {
 	if (routing_header->is_destination) {
@@ -362,13 +362,13 @@ process_route_sequence(rheader_t* routing_header, rpayload_t* routing_payload)
 		return process_instruction(routing_header, routing_payload);
 	}
 
-	read_routing_section(routing_payload->sections[routing_header->cur_section]);
+	read_routing_section(routing_payload->sections[routing_header->cur_section], routing_header->sections_len[routing_header->cur_section], routing_header->is_forward, routing_header->msg_id);
 
 	routing_header->cur_section += 1;
 
-	if (routing_header->num_sections == routing_header->cur_sections) { 
+	if (routing_header->num_sections == routing_header->cur_section) { 
 		routing_header->is_destination = 1;
-		return;
+		return 0;
 	}
 
 }

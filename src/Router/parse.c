@@ -60,10 +60,10 @@ create_routing_header(unsigned char* data)
 	memcpy(&routing_header->num_sections, data + 3 * sizeof(int8_t), sizeof(int32_t));
 	memcpy(&routing_header->cur_section, data  + 3 * sizeof(int8_t) + sizeof(int32_t), sizeof(int32_t));
 	memcpy(&routing_header->response_len, data + 3 * sizeof(int8_t) + 2 * sizeof(int32_t), sizeof(int32_t));
-	
+	memcpy(&routing_header->msg_id, data + 3 * sizeof(int8_t) + 3 * sizeof(int32_t), sizeof(int32_t));
 	routing_header->sections_len = (int32_t*)malloc(sizeof(int32_t)*routing_header->num_sections);
 	for (int i = 0; i < routing_header->num_sections; i++) {
-		memcpy(&routing_header->sections_len[i], data + 3 * sizeof(int8_t) + 3 * sizeof(int32_t) + i * sizeof(int32_t), sizeof(int32_t));
+		memcpy(&routing_header->sections_len[i], data + 3 * sizeof(int8_t) + 4 * sizeof(int32_t) + i * sizeof(int32_t), sizeof(int32_t));
 	}
 	print_info("ROUTER - Created routing header struct");
 

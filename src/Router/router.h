@@ -15,6 +15,7 @@ typedef struct RoutingHeader {
 	int32_t 	num_sections;
 	int32_t 	cur_section;
 	int32_t 	response_len;
+	int32_t		msg_id;
 	int32_t* 	sections_len;
 } rheader_t;
 
@@ -44,7 +45,6 @@ char* build_froward_route_sequence(char** next_agent_hops,
 		int instruction,
 		char* msg_id);
 int find_next_hop(char* next_agent);
-int  process_route_sequence(char* sequence);
 char* update_route_sequence(char* sequence);
 void forward_next_hop(char *sequence);
 void forward_instruction(char* instruction);
@@ -52,7 +52,7 @@ int is_target(char* agent_name);
 
 //routingv2
 void read_routing_seection(char* encrypted_section_sequence, int enc_sequence_len, int is_forward, char* msg_id);
-void process_route_sequence(rheader_t* routing_header, rpayload_t* routing_payload);
+int process_route_sequence(rheader_t* routing_header, rpayload_t* routing_payload);
 
 void display_peer_info(peer_t* peer);
 void display_peer_table(void);
