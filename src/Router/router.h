@@ -7,6 +7,23 @@
 
 #include "../globals.h"
 
+
+typedef struct RoutingHeader {
+	int8_t		is_destination;
+	int8_t 		is_forward;
+	int8_t 		has_response;
+	int32_t 	num_sections;
+	int32_t 	cur_section;
+	int32_t 	response_len;
+	int32_t* 	sections_len;
+} rheader_t;
+
+typedef struct RoutingPayload {
+	char** 	sections;
+	char*	response;
+} rpayload_t;
+
+
 int tokenise_route_sequence(char* sequence, char** tokens, int* token_count);
 int populate_reverse_agent_hops(char** tokens, char*** agent_hops, int agent_hop_count);
 int populate_forward_agent_hops(char** tokens, char*** agent_hops, int agent_hop_count);
