@@ -1,6 +1,7 @@
 .*.swp
 *.o
 test_queue
+test_parser
 test_router
 test_router_sequence
 test_message
