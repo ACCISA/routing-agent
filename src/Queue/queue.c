@@ -1,15 +1,34 @@
 #include "../Queue/queue.h"
 #include "../Utils/utils.h"
 #include "../Utils/error.h"
+#include "../globals.h"
+
+void
+REACTOR_add_job(void (*task_func)(void* func_arg), 
+		void (*task_cb)(void* cb_arg),
+		void* func_arg,
+		void* cb_arg)
+{
+	print_info("REACTOR - Added new job to reactor queue");
+	printf("[+] REACTOR - Current queue size: %d\n", Agent->reactor_queue->size);
+
+	job_t* new_job = create_job("XYZ", task_func, task_cb,  func_arg, cb_arg);
+	add_job(Agent->reactor_queue, new_job, 0);
+
+}
 
 job_t*
-create_job(char* task_name, void (*task_func)(int n, ...), void (*task_cb)(int n, ...))
+create_job(char* task_name, void (*task_func)(void* func_arg),
+		void (*task_cb)(void* cb_arg),
+		void* func_arg, void* cb_arg)
 {
 	job_t* new_job = (job_t*)malloc(sizeof(job_t));
 
 	new_job->task_name = task_name;
 	new_job->task_func = task_func;
 	new_job->task_cb = task_cb;
+	new_job->func_arg = func_arg;
+	new_job->cb_arg = cb_arg;
 	new_job->next_job = NULL;
 	
 	print_info("Created job");

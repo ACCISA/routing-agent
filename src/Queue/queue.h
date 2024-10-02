@@ -7,8 +7,10 @@
 
 typedef struct job {
 	char* task_name;
-	void (*task_func)(int n, ...);
-	void (*task_cb)(int n, ...);
+	void (*task_func)(void* func_arg);
+	void (*task_cb)(void* cb_arg);
+	void* func_arg;
+	void* cb_arg;
 	struct job* next_job;
 } job_t;
 
@@ -16,6 +18,12 @@ typedef struct job_queue {
 	int	size;
 	job_t* 	job_head;
 } rqueue_t;
+
+
+void REACTOR_add_job(void (*task_func)(void* func_arg), 
+		void (*task_cb)(void* cb_arg),
+		void* func_arg,
+		void* cb_arg);
 
 job_t* create_job(char* task_name,
 		void (*task_func)(int n, ...),

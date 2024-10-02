@@ -17,6 +17,7 @@ initialize_agent_info(void)
 	Agent->msg_store = (msg_store_t*)malloc(sizeof(msg_store_t*));
 	Agent->msg_store->size = 0;
 	Agent->msg_store->msg = NULL;
+	Agent->reactor_queue = (rqueue_t*)malloc(sizeof(rqueue_t));
 }
 
 int

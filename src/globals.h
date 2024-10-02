@@ -35,6 +35,7 @@ typedef struct {
 	char* key;
 	routing_t* routing;
 	msg_store_t* msg_store;
+	rqueue_t* reactor_queue;
 } AgentInfo;
 
 
