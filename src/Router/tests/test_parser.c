@@ -4,16 +4,18 @@
 
 int main(void) 
 {
-	char data1[28] = {
-		0x01,
-		0x01,
-		0x01,
-		0x02,0x00,0x00,0x00,
-		0x08,0x00,0x00,0x00,
-		0x11,0x00,0x41,0x00,
-		0x32,0x00,0x00,0x00,
-		0x01,0x00,0x00,0x00,0x02,0x00,0x00,0x00,
-		0x3b,0x41,0x41,0x41,0x00
+	char data1[44] = {
+		0x01, // is_destination
+		0x01, // is_forward
+		0x01, // has_response
+		0x02,0x00,0x00,0x00, // num_sections
+		0x08,0x00,0x00,0x00, // cur_section
+		0x11,0x00,0x41,0x00, // response_len
+		0x32,0x00,0x00,0x00, // msg_id
+		0x08,0x00,0x00,0x00,0x08,0x00,0x00,0x00, // sections_len
+		0x3b,
+		0x41,0x31,0x2c,0x41,0x32,0x2c,0x41,0x33,
+		0x41,0x32,0x2c,0x41,0x33,0x2c,0x41,0x34
 	};
 
 
@@ -25,7 +27,7 @@ int main(void)
 	int header_len;
 	int payload_len;
 
-	int status = parse_routing_message(data1,28, item1, &header_len, item2, &payload_len);
+	int status = parse_routing_message(data1,44, item1, &header_len, item2, &payload_len);
 		
 	if (status == -1) {
 		print_error("Failed to parse routing message test1");
@@ -36,9 +38,9 @@ int main(void)
 		printf("0x%02X\n ", item1[i]);
 	}
 	printf("----\n");
-
-	for (int i = 0; i < payload_len-1; i++) {
-		printf("0x%02X ", item2[i]);
+	printf("len: %d\n", payload_len);
+	for (int i = 0; i < payload_len; i++) {
+		printf("0x%02X\n", item2[i]);
 	}
 
 	print_info("Test result:");
@@ -54,6 +56,18 @@ int main(void)
 	}
 	
 	display_header_info(routing_header);
+
+	rpayload_t* routing_payload;
+	printf("item2: %s\n", item2);
+	routing_payload = create_routing_payload(item2, routing_header->num_sections, routing_header->sections_len);
+
+	if (routing_payload == NULL) {
+		print_error("failed to create routing paylaod");
+	}
+
+	printf("payload: %s\n", routing_payload->sections[0]);
+
+	process_route_sequence(routing_header, routing_payload);
 
 	return 0;
 }

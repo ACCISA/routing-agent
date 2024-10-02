@@ -6,10 +6,19 @@
 
 int main(void)
 {
-
-	char sequence[] = "3;A2;A3;A4;0;1;111";
-	char sequence2[] = "4;A2;A3;A4;A5;0;1;222";
-	char sequence_invalid[] = "3;A2;A3;A4;A5;0;1;333";
+	char data[44] = {
+		0x00, // is_destination
+		0x01, // is_forward
+		0x01, // has_response
+		0x02,0x00,0x00,0x00, // num_sections
+		0x08,0x00,0x00,0x00, // cur_section
+		0x11,0x00,0x41,0x00, // response_len
+		0x32,0x00,0x00,0x00, // msg_id
+		0x08,0x00,0x00,0x00,0x08,0x00,0x00,0x00, // sections_len
+		0x3b,
+		0x41,0x31,0x2c,0x41,0x32,0x2c,0x41,0x33,
+		0x41,0x31,0x2c,0x41,0x32,0x2c,0x41,0x33,
+	};
 
 	initialize_agent_info();
 
@@ -34,31 +43,50 @@ int main(void)
 	add_peer_entry(peer4);
 	add_peer_entry(peer3);
 	
-
-
-	remove_peer_entry("A2");
-	display_peer_table();
-	remove_peer_entry("A3");
-	display_peer_table();
-	remove_peer_entry("A4");
-	display_peer_table();
-	remove_peer_entry("A1");
-
 	display_peer_table();
 
-	return;
+	char item1[50];
+	char item2[50];
 
-	int status = process_route_sequence(sequence);
+	int header_len;
+	int payload_len;
 
-	if (status != 0) {
-		print_info("Failed to run route sequence process test");
+	int status = parse_routing_message(data,44, item1, &header_len, item2, &payload_len);
+		
+	if (status == -1) {
+		print_error("Failed to parse routing message test1");
 		return 1;
 	}
-	print_info("-----------");
-	//process_route_sequence(sequence2);
-	//print_info("-----------");
-	//process_route_sequence(sequence_invalid);
+
+
+	print_info("Test result:");
+	printf("[+] (header_data=%s), (payload_data=%s)\n", item1, item2);
+
+	rheader_t* routing_header;
+
+	routing_header = create_routing_header(item1);
+
+	if (routing_header == NULL) {
+		printf("faield to create header\n");
+		return 1;
+	}
 	
+	display_header_info(routing_header);
+
+	rpayload_t* routing_payload;
+	printf("item2: %s\n", item2);
+	routing_payload = create_routing_payload(item2, routing_header->num_sections, routing_header->sections_len);
+
+	if (routing_payload == NULL) {
+		print_error("failed to create routing paylaod");
+	}
+
+	printf("payload: %s\n", routing_payload->sections[0]);
+
+
+	process_route_sequence(routing_header, routing_payload);
+	process_route_sequence(routing_header, routing_payload);
+
 	return 0;
 
 }
