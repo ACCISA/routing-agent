@@ -30,29 +30,10 @@ int parse_routing_message(unsigned char* data, int data_len, unsigned char* head
 rheader_t* create_routing_header(unsigned char* data);
 rpayload_t* create_routing_payload(unsigned char* data, int32_t num_sections, int32_t* sections_len);
 
-int tokenise_route_sequence(char* sequence, char** tokens, int* token_count);
-int populate_reverse_agent_hops(char** tokens, char*** agent_hops, int agent_hop_count);
-int populate_forward_agent_hops(char** tokens, char*** agent_hops, int agent_hop_count);
-char* build_reverse_route_sequence(char** next_agent_hops,
-		int next_agent_hops_len,
-		int agent_hop_progress,
-		char* sender_name,
-		int instruction,
-		char* msg_id);
-char* build_froward_route_sequence(char** next_agent_hops,
-		int next_agent_hops_len,
-		int agent_hop_progress,
-		int instruction,
-		char* msg_id);
-int find_next_hop(char* next_agent);
-char* update_route_sequence(char* sequence);
-void forward_next_hop(char *sequence);
-void forward_instruction(char* instruction);
-int is_target(char* agent_name);
-
-//routingv2
-void read_routing_seection(char* encrypted_section_sequence, int enc_sequence_len, int is_forward, char* msg_id);
+void read_routing_seection(unsigned char* encrypted_section_sequence, int enc_sequence_len, int is_forward, char* msg_id);
 int process_route_sequence(rheader_t* routing_header, rpayload_t* routing_payload);
+int process_instruction(rheader_t* routing_header, rpayload_t* routing_payload);
+
 
 void display_peer_info(peer_t* peer);
 void display_peer_table(void);

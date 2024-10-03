@@ -4,21 +4,22 @@
 
 #include "../Router/router.h"
 #include "../Message/message.h"
+#include "../Crypt/crypt.h"
 #include "../Utils/utils.h"
 #include "../Utils/error.h"
 
 void
-read_routing_section(char* encrypted_section_sequence, int enc_sequence_len, int is_forward, char* msg_id)
+read_routing_section(unsigned char* encrypted_section_sequence, int enc_sequence_len, int is_forward, int32_t  msg_id)
 {
 
-	char section_sequence[30];
+	unsigned char section_sequence[30];
 
-	if (AES_decrypt(encrypted_section_sequence, enc_sequence_len, Agent->key, Agent->iv, section_sequence) == 1) {
+	if (AES_decrypt(encrypted_section_sequence, enc_sequence_len, Agent->decrypt_key, Agent->iv, section_sequence) == 1) {
 		print_error("ROUTER - Failed to decrypt encrypted routing sequence");
 		return;
 	}
 
-	char* prev_agent_name = strtok(section_sequence, ",");
+	char* prev_agent_name = strtok((char*)section_sequence, ",");
 	char* cur_agent_name = strtok(NULL, ",");
 	char* next_agent_name = strtok(NULL, ",");
 	
@@ -58,7 +59,7 @@ read_routing_section(char* encrypted_section_sequence, int enc_sequence_len, int
 			return;
 		}
 
-		if (strncmp(prev_msg->sender, prev_peer->agent_name, strlen(prev_peer->agent_name)) != 0) {
+		if (strncmp(prev_msg->sender->agent_name, prev_peer->agent_name, strlen(prev_peer->agent_name)) != 0) {
 			print_error("ROUTER - Failed to validate message, prev_peer != msg_peer");
 			return;
 		}
@@ -69,20 +70,33 @@ read_routing_section(char* encrypted_section_sequence, int enc_sequence_len, int
 }
 
 int
+process_instruction(rheader_t* routing_header, rpayload_t* routing_payload)
+{
+	print_info("ROUTER - Added instruction to reactor queue");
+	// TODO process instruction and add to reactor queue
+	// REACTOR_add_job(do_instruction, do_instruction_cb, , );
+	return 0;
+}
+
+int
 process_route_sequence(rheader_t* routing_header, rpayload_t* routing_payload)
 {
 	if (routing_header->is_destination) {
 		print_info("ROUTER - Message arrived at destination, instruction added to queue");
+
 		return process_instruction(routing_header, routing_payload);
 	}
 
-	read_routing_section(routing_payload->sections[routing_header->cur_section],
+	read_routing_section((unsigned char*)routing_payload->sections[routing_header->cur_section],
 			routing_header->sections_len[routing_header->cur_section],
 		       	routing_header->is_forward, routing_header->msg_id);
 
 	routing_header->cur_section += 1;
 
-	if (routing_header->num_sections == routing_header->cur_section) routing_header->is_destination = 1;
+	if (routing_header->num_sections == routing_header->cur_section) { 
+		routing_header->is_destination = 1;
+		routing_header->is_forward = 0;
+	}
 
 	return 0;
 }

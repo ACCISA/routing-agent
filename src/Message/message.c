@@ -2,7 +2,7 @@
 #include "../globals.h"
 
 message_t*
-create_message(char* id, peer_t* sender)
+create_message(int32_t id, peer_t* sender)
 {
 	time_t cur_time;
 	time(&cur_time);
@@ -11,7 +11,7 @@ create_message(char* id, peer_t* sender)
 	strftime(time_sent, sizeof(time_sent), "%Y-%m-%d %H:%M:%S", cur_time_h);
 
 	message_t* msg = (message_t*)malloc(sizeof(message_t));
-	msg->id = atoi(id);
+	msg->id = id;
 	msg->time_sent = (char*)malloc(sizeof(char)*strlen(time_sent)+1);
 	strncpy(msg->time_sent, time_sent, strlen(time_sent));
 	msg->time_sent[strlen(time_sent)] = '\0';
@@ -67,28 +67,28 @@ store_message(message_t* msg)
 }
 
 message_t*
-get_message(char* msg_id)
+get_message(int32_t msg_id)
 {
 	if (Agent->msg_store->size == 0) {
-		printf("[!] MESSAGE - Failed to find (msg_id=%s) in message store\n", msg_id);
+		printf("[!] MESSAGE - Failed to find (msg_id=%d) in message store\n", msg_id);
 		return NULL;
 	}
 
 	message_t* found_msg = Agent->msg_store->msg;
 
 	while (found_msg != NULL) {
-		if (found_msg->id == atoi(msg_id)) {
-			printf("[+] MESSAGE - Found entry for msg_id: %s\n", msg_id);
+		if (found_msg->id == msg_id) {
+			printf("[+] MESSAGE - Found entry for msg_id: %d\n", msg_id);
 			return found_msg;
 		}
 		found_msg = found_msg->next_msg;
 	}
-	printf("[!] MESSAGE - Failed to find (msg_id=%s) in message store\n", msg_id);
+	printf("[!] MESSAGE - Failed to find (msg_id=%d) in message store\n", msg_id);
 	return NULL;
 }
 
 message_t*
-remove_message(char* msg_id)
+remove_message(int32_t  msg_id)
 {
 	if (is_agent_init() == 0) return NULL;
 	if (Agent->msg_store->size == 0) return NULL;
@@ -98,8 +98,8 @@ remove_message(char* msg_id)
 	message_t* removed_msg;
 
 	while (temp_msg != NULL) {
-		if (temp_msg->id == atoi(msg_id)) {
-			printf("[+] MESSAGE - Removed message (msg_id=%s) from message store\n", msg_id);
+		if (temp_msg->id == msg_id) {
+			printf("[+] MESSAGE - Removed message (msg_id=%d) from message store\n", msg_id);
 			if (prev_msg == NULL) {
 				removed_msg = Agent->msg_store->msg;
 				Agent->msg_store->msg = Agent->msg_store->msg->next_msg;
@@ -117,6 +117,6 @@ remove_message(char* msg_id)
 		temp_msg = temp_msg->next_msg;
 	}
 	
-	printf("[!] ROUTER - Unable to remove message (msg_id=%s)\n", msg_id);
+	printf("[!] ROUTER - Unable to remove message (msg_id=%d)\n", msg_id);
 	return NULL;
 }

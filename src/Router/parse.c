@@ -5,7 +5,7 @@
 void
 display_header_info(rheader_t* routing_header)
 {
-	printf("---------------------------------------------------");
+	printf("---------------------------------------------------\n");
 	print_info("ROUTER - Displaying routing header");
 	printf("[+] ROUTER - (is_destination=%d), (is_forward=%d), (has_response=%d)\n",
 			routing_header->is_destination,
@@ -15,12 +15,12 @@ display_header_info(rheader_t* routing_header)
 			routing_header->num_sections,
 			routing_header->cur_section,
 			routing_header->response_len);
-	printf("[+] ROUTER - Sequences len:");
+	printf("[+] ROUTER - Sequences len:\n");
 	for (int i = 0; i < routing_header->num_sections; i++) {
 		printf("[+] ROUTER - (section%d=%d)\n", i+1, routing_header->sections_len[i]);
 	}
 
-	printf("---------------------------------------------------");
+	printf("---------------------------------------------------\n");
 }
 
 int
@@ -73,4 +73,38 @@ create_routing_header(unsigned char* data)
 rpayload_t*
 create_routing_payload(unsigned char* data, int32_t num_sections, int32_t* sections_len)
 {
+	rpayload_t* routing_payload = (rpayload_t*)malloc(sizeof(rpayload_t));
+
+	if (routing_payload == NULL) {
+		print_error("ROUTER - Failed to malloc routing_payload");
+		return NULL;
+	}
+
+	routing_payload->sections = (char**)malloc(num_sections*sizeof(char*));
+
+	if (routing_payload->sections == NULL) {
+		print_error("ROUTER - Failed to malloc routing_payload");
+		free(routing_payload);
+		return NULL;
+	}
+
+	unsigned char* position = data;
+
+	for (int i = 0; i < num_sections; i++) {
+		routing_payload->sections[i] = (char*)malloc(sections_len[i]);
+		
+		if (routing_payload->sections[i] == NULL) {
+			print_error("ROUTER - Failed to malloc routing_payload");
+			for (int j = 0; j < i; j++) {
+				free(routing_payload->sections[j]);
+			}
+			free(routing_payload->sections);
+			free(routing_payload);
+			return NULL;
+		}
+		memcpy(routing_payload->sections[i], position, sections_len[i]);
+		position += sections_len[i];
+	}
+
+	return routing_payload;
 }

@@ -65,6 +65,22 @@ set_agent_port(int port)
 }
 
 void
+set_agent_key(unsigned char* decrypt_key)
+{
+	if (is_agent_init() == 0) return;
+	print_info("GLOBAL - Set global variable decrypt_key");
+	Agent->decrypt_key = decrypt_key;
+}
+
+void
+set_agent_iv(unsigned char* iv)
+{
+	if (is_agent_init() == 0) return;
+	print_info("GLOBAL - Set global variable iv");
+	Agent->iv = iv;
+}
+
+void
 display_agent_info(void)
 {
 	if (is_agent_init() == 0) return;
