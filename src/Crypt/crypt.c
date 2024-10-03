@@ -66,7 +66,7 @@ AES_decrypt(unsigned char*		cipher,
 	}
 
 	if (EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv) != 1) {
-		print_error("DECRYPT - EVP_DecryptInit_ez");
+		print_error("DECRYPT - EVP_DecryptInit_ex");
 		ERR_print_errors_fp(stderr);
 		return -1;
 	}
@@ -79,7 +79,7 @@ AES_decrypt(unsigned char*		cipher,
 	data_len = len;
 
 	if (EVP_DecryptFinal_ex(ctx, data+len, &len) != 1) {
-		print_error("DECRYPT - EVP_DecryptUpdate");
+		print_error("DECRYPT - EVP_DecryptFinal_ex");
 		ERR_print_errors_fp(stderr);
 		return -1;
 	}

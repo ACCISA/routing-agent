@@ -9,15 +9,24 @@
 #include "../Utils/error.h"
 
 void
-read_routing_section(unsigned char* encrypted_section_sequence, int enc_sequence_len, int is_forward, int32_t  msg_id)
+read_routing_section(rheader_t* routing_header, rpayload_t* routing_payload)
 {
-
+	unsigned char* encrypted_section_sequence = (unsigned char*)routing_payload->sections[routing_header->cur_section-1];
+	int enc_sequence_len = routing_header->sections_len[routing_header->cur_section-1];
+	int is_forward = routing_header->is_forward;
+	int32_t msg_id = routing_header->msg_id;
 	unsigned char section_sequence[30];
-
-	if (AES_decrypt(encrypted_section_sequence, enc_sequence_len, Agent->decrypt_key, Agent->iv, section_sequence) == 1) {
+	int data_len = 0;
+	if ((data_len = AES_decrypt(encrypted_section_sequence, enc_sequence_len, 
+					Agent->decrypt_key,
+					Agent->iv,
+					section_sequence)) == 1) {
 		print_error("ROUTER - Failed to decrypt encrypted routing sequence");
 		return;
 	}
+
+	section_sequence[data_len] = '\0';
+	printf("[+] ROUTER - Decrypted routing sequence: %s\n", section_sequence);
 
 	char* prev_agent_name = strtok((char*)section_sequence, ",");
 	char* cur_agent_name = strtok(NULL, ",");
@@ -49,6 +58,13 @@ read_routing_section(unsigned char* encrypted_section_sequence, int enc_sequence
 	if (is_forward == 1) {
 		message_t* new_msg = create_message(msg_id, prev_peer);
 		store_message(new_msg);
+		routing_header->cur_section += 1;
+
+		if (routing_header->num_sections == routing_header->cur_section) {
+			print_info("ROUTER - Next hop is destination");
+			routing_header->is_destination = 1;
+			routing_header->is_forward = 0;
+		}
 		// REACTOR_add_job(send_tcp_message, send_tcp_message_cb, );
 
 	} else {
@@ -64,6 +80,8 @@ read_routing_section(unsigned char* encrypted_section_sequence, int enc_sequence
 			return;
 		}
 
+		routing_header->cur_section -= 1;
+		free(prev_msg);
 		// REACTOR_add_job(send_tcp_message, send_tcp_message_cb);
 	}
 
@@ -83,20 +101,10 @@ process_route_sequence(rheader_t* routing_header, rpayload_t* routing_payload)
 {
 	if (routing_header->is_destination) {
 		print_info("ROUTER - Message arrived at destination, instruction added to queue");
-
 		return process_instruction(routing_header, routing_payload);
 	}
 
-	read_routing_section((unsigned char*)routing_payload->sections[routing_header->cur_section],
-			routing_header->sections_len[routing_header->cur_section],
-		       	routing_header->is_forward, routing_header->msg_id);
-
-	routing_header->cur_section += 1;
-
-	if (routing_header->num_sections == routing_header->cur_section) { 
-		routing_header->is_destination = 1;
-		routing_header->is_forward = 0;
-	}
+	read_routing_section(routing_header, routing_payload);
 
 	return 0;
 }
