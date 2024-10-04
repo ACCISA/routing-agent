@@ -26,6 +26,9 @@ A simple agent designed to route TCP connections and perform tasks. This agent r
 3. **TLS for Communication**: 
    - All communication between agents is secured using TLS, ensuring encrypted and authenticated data transfer.
 
+![Agent Architecture](https://i.imgur.com/FAtnzbb.png)
+
+
 ## How It Works
 
 1. **Initialize the Agent**: 
