@@ -1,11 +1,53 @@
-# routing-agent
-simple agent to route tcp and perform a task
-\n
-this agent runs on a single thread and utilizes a reactor pattern to poll fd for state changes. Tasks and reactor jobs are queued and ran in a loop. \n
-messages are encrypted using AES. Each agent has its own key that the console uses to encrypt and decrypt messages. \n
-comms between agent uses tls. \n
-step: write server.c
-step: implement SSL
-step: implement reactor pattern
+# TCP Routing Agent
 
+A simple agent designed to route TCP connections and perform tasks. This agent runs on a single thread and uses the **reactor pattern** to monitor file descriptors for state changes. Tasks and reactor jobs are queued and executed within a loop, ensuring non-blocking operations.
 
+## Features
+
+- **Single-threaded Reactor Pattern**: 
+  - Monitors and handles file descriptor events using a non-blocking, event-driven design.
+- **AES Encryption**:
+  - All messages are encrypted using AES. Each agent has a unique key for message encryption and decryption.
+- **TLS Communication**:
+  - Secure communication between agents using TLS (Transport Layer Security).
+
+## Architecture
+
+1. **Reactor Pattern**: 
+   - The reactor monitors file descriptors and queues tasks for execution when events occur (e.g., read/write readiness).
+   
+2. **AES Encryption**: 
+   - Messages sent between the console and agents are encrypted with AES using agent-specific keys.
+   
+3. **TLS for Communication**: 
+   - All communication between agents is secured using TLS, ensuring encrypted and authenticated data transfer.
+
+## Setup and Development Steps
+
+### Step 1: Write `server.c`
+- Create the main server file responsible for handling TCP connections and routing messages.
+- Use the reactor pattern to monitor incoming connections and process tasks in a single thread.
+
+### Step 2: Implement SSL/TLS
+- Integrate OpenSSL to establish secure communication between agents.
+- Implement the SSL handshake and wrap socket connections in a TLS layer for secure communication.
+
+### Step 3: Implement Reactor Pattern
+- Use the `poll()` system call to monitor file descriptors for changes.
+- Create a task queue to handle incoming data, trigger events, and execute tasks within the main event loop.
+
+## How It Works
+
+1. **Initialize the Agent**: 
+   - Each agent starts a single-threaded loop that listens for incoming connections and queues jobs when events occur.
+   
+2. **Encrypt/Decrypt Messages**: 
+   - The console sends encrypted messages to the agent using a shared AES key. The agent decrypts messages and processes them accordingly.
+   
+3. **Secure Communication**: 
+   - All communication between agents is encrypted using TLS, ensuring the integrity and confidentiality of messages exchanged.
+
+## Requirements
+
+- OpenSSL (for TLS and AES encryption)
+- GCC or any compatible C compiler
