@@ -9,6 +9,23 @@
 #include "../Utils/error.h"
 
 void
+free_routing_message(rmessage_t* routing_message)
+{
+	
+	for (int i = 0; i < routing_message->routing_header->num_sections; i++) {
+		free(routing_message->routing_payload->sections[i]);
+	}
+		
+	if (routing_message->routing_header->has_response) {
+		free(routing_message->routing_payload->response);
+	}
+
+	free(routing_message->routing_header->sections_len);
+	free(routing_message->routing_header);
+	
+	free(routing_message->routing_payload);
+}
+void
 read_routing_section(rheader_t* routing_header, rpayload_t* routing_payload)
 {
 	unsigned char* encrypted_section_sequence = (unsigned char*)routing_payload->sections[routing_header->cur_section-1];
@@ -65,10 +82,18 @@ read_routing_section(rheader_t* routing_header, rpayload_t* routing_payload)
 			routing_header->is_destination = 1;
 			routing_header->is_forward = 0;
 		}
-		// REACTOR_add_job(send_tcp_message, send_tcp_message_cb, );
 
+		rmessage_t* routing_message = (rmessage_t*)malloc(sizeof(rmessage_t));
+		
+		routing_message->routing_header  = routing_header;
+		routing_message->routing_payload = routing_payload;
+		routing_message->peer  		 = next_peer;
+
+
+
+		REACTOR_add_job(send_tcp_message, send_tcp_message_cb, (void*)routing_message, (void*)routing_message);
 	} else {
-		message_t* prev_msg = get_message(msg_id);
+		message_t* prev_msg = remove_message(msg_id);
 
 		if (prev_msg == NULL) {
 			print_error("ROUTER - Failed to find stored message of reverse routing sequence");
@@ -81,8 +106,14 @@ read_routing_section(rheader_t* routing_header, rpayload_t* routing_payload)
 		}
 
 		routing_header->cur_section -= 1;
-		free(prev_msg);
-		// REACTOR_add_job(send_tcp_message, send_tcp_message_cb);
+		
+		rmessage_t* routing_message = (rmessage_t*)malloc(sizeof(rmessage_t));
+
+		routing_message->routing_header  = routing_header;
+		routing_message->routing_payload = routing_payload;
+		routing_message->peer 		 = prev_peer;
+
+		// REACTOR_add_job(send_tcp_message, send_tcp_message_cb, (void*)routing_message, (void*)routing_message);
 	}
 
 }

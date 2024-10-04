@@ -1,4 +1,5 @@
 #include "../Server/server.h"
+#include "../Router/router.h"
 
 void
 init_openssl(void)
@@ -60,14 +61,14 @@ create_socket(const char* hostname, int port)
 	return sock;
 }
 
-int
+SSL*
 create_ssl_connection(const char* hostname, int port)
 {
 	SSL_CTX *ctx;
 	SSL *ssl;
 
 	init_openssl();
-	ctx = create_ssl_context();
+	ctx = create_ssl_context();:
 
 	sock = create_socket(hostname, port);
 
@@ -76,10 +77,54 @@ create_ssl_connection(const char* hostname, int port)
 
 	if (SSL_connect(ssl) <= 0) {
 		ERR_print_errors_fp(stderr);
-	} else {
-		print_info("Connected with encryption:");
-		printf("alg_enc: %s\n", SSL_get_cipher(ssl));
+		return NULL;
 	}
+
+	print_info("Connected with encryption:");
+	printf("[+] SERVER - alg_enc: %s\n", SSL_get_cipher(ssl));
+	
+	return ssl;
 }
 
+int
+send_routing_data(void* data)
+{
+	unsigned char buffer[300];
 
+	rmessage_t* routing_message = (rmessage_t*)data;
+
+	if (routing_message == NULL) {
+		print_error("SERVER - Failed to cast data to rmessage_t");
+		return 1;
+	}
+
+	rbuffer_t* routing_buffer = (rbuffer_t*)malloc(sizeof(rbuffer_t));
+
+	routing_buffer->routing_header = routing_message->routing_header;
+	routing_buffer->routing_payload = routing_message->routing_payload;
+
+	SSL* ssl = create_ssl_connection(routing_message->peer->ip, routing_message->peer->ip);
+
+	if (ssl == NULL) {
+		return 1;
+	}
+
+	memcpy(routing_buffer, buffer, sizeof(routing_buffer));
+
+	printf("[+] SERVER - Sending %d bytes\n", sizeof(routing_buffer));
+
+	if (SSL_write(ssl, buffer, sizeof(routing_buffer)) <= 0) {
+		ERR_print_errors_fp(stderr);
+	}
+
+}
+
+int
+send_routing_data_cb(void* data)
+{
+	rmessage_t* routing_message = (rmessage_t*)data;
+
+	free_routing_message(routing_message);
+
+	return 0;
+}
