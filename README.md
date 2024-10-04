@@ -10,6 +10,10 @@ A simple agent designed to route TCP connections and perform tasks. This agent r
   - All messages are encrypted using AES. Each agent has a unique key for message encryption and decryption.
 - **TLS Communication**:
   - Secure communication between agents using TLS (Transport Layer Security).
+- - **Custom Routing Protocol**:
+  - Implements a custom protocol for routing messages between agents and delivering them to the intended destination efficiently.
+- **Python Console Interaction**:
+  - A Python console interface is provided for interacting with agents, allowing commands to be sent to agents, encrypted using AES, and routed via the custom protocol.
 
 ## Architecture
 
