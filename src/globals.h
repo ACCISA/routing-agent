@@ -3,7 +3,24 @@
 
 #include "Queue/queue.h"
 
+#include <poll.h>
+#include <unistd.h>
+#include <fcntl.h>
+
 #define MAX_ROUTE_SEQUENCE_LEN 100
+
+typedef struct handler {
+	struct pollfd* fd;
+	void* data;
+	int (*event_handler)(void* data);
+	int (*event_handler_cb)(void* data);
+	struct handler* next_handler;
+} rhandler_t;
+
+typedef struct handler_list {
+	int  size;
+	rhandler_t* handler;
+} rhandler_list_t;
 
 typedef struct peer {
 	char* ip_addr;
@@ -38,6 +55,7 @@ typedef struct {
 	routing_t* routing;
 	msg_store_t* msg_store;
 	rqueue_t* reactor_queue;
+	rhandler_list_t* handler_list;
 } AgentInfo;
 
 
