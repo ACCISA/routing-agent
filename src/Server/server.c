@@ -83,6 +83,16 @@ create_ssl_connection(const char* hostname, int port)
 	print_info("Connected with encryption:");
 	printf("[+] SERVER - alg_enc: %s\n", SSL_get_cipher(ssl));
 	
+	rhandler_t* handler = (rhandler_t*)malloc(sizeof(rhandler_t));
+
+	handler->event_handler 		= send_routing_data;
+	hadnler->event_handler_cb 	= send_routing_data_cb;
+	handler->fd 			= (struct pollfd*)malloc(sizeof(pollfd));
+	handler->data 			= NULL;
+	handler->next_handler 		= NULL;
+
+	REACTOR_register_handler(handler);
+
 	return ssl;
 }
 
