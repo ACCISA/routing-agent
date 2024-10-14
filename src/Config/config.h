@@ -4,6 +4,5 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void set_agent_from_file(char* filename);
 
 #endif

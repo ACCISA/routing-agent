@@ -6,6 +6,7 @@ test_router
 test_router_sequence
 test_message
 test_crypt
+test_config
 *.gdb_history
 bin/
 obj/

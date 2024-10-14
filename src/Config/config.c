@@ -1,10 +1,12 @@
 #include "../Utils/error.h"
 #include "../Utils/utils.h"
+#include "../Config/config.h"
 
 #include <stdio.h>
 #include <string.h>
 
-void set_agent_from_file(const char* filename)
+void
+set_agent_from_config(char* filename)
 {
     FILE* file = fopen(filename, "r");
 
@@ -48,11 +50,11 @@ void set_agent_from_file(const char* filename)
         return;
     }
 
-    set_agent_name(agent_name);
-    set_agent_ip_addr(ip_addr);
-    set_agent_port(port);
-    set_agent_key(key);
-    set_agent_iv(iv);
+    set_agent_name((char*)agent_name);
+    set_agent_ip_addr((char*)ip_addr);
+    set_agent_port(atoi(port));
+    set_agent_key((unsigned char*)key);
+    set_agent_iv((unsigned char*)iv);
 
     fclose(file);
 }
