@@ -5,7 +5,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../globals.h"
+typedef struct peer {
+	char* ip_addr;
+	int port;
+	char* agent_name;
+	struct peer* next_peer;
+} peer_t;
+
+typedef struct routing {
+	int size;
+	peer_t* table;
+} routing_t;
 
 
 typedef struct RoutingHeader {

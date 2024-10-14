@@ -1,4 +1,4 @@
-SRC_DIRS := Router Server Message ReactorV2 Crypt Utils Queue
+SRC_DIRS := Router Server Message Reactor Crypt Utils Queue
 OBJ_DIR := obj
 BIN_DIR := bin
 

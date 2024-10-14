@@ -1,7 +1,6 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -27,4 +26,3 @@ void display_reactor_queue(rqueue_t* reactor_queue);
 job_t* get_job(rqueue_t* reactor_queue);
 
 #endif
-

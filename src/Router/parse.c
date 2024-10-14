@@ -1,6 +1,4 @@
-#include "../Router/router.h"
-#include "../Utils/error.h"
-#include "../Utils/utils.h"
+#include "../globals.h"
 
 void
 display_header_info(rheader_t* routing_header)

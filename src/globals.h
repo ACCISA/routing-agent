@@ -1,51 +1,6 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-#include "Queue/queue.h"
-
-#include <poll.h>
-#include <unistd.h>
-#include <fcntl.h>
-
-#define MAX_ROUTE_SEQUENCE_LEN 100
-
-typedef struct handler {
-	struct pollfd fd;
-	void* data;
-	int (*event_handler)(void* data);
-	int (*event_handler_cb)(void* data);
-	struct handler* next_handler;
-} rhandler_t;
-
-typedef struct handler_list {
-	int  size;
-	rhandler_t* handler;
-} rhandler_list_t;
-
-typedef struct peer {
-	char* ip_addr;
-	int port;
-	char* agent_name;
-	struct peer* next_peer;
-} peer_t;
-
-typedef struct message {
-	int32_t id;
-	char* time_sent;
-	peer_t* sender;
-	struct message* next_msg;
-} message_t;
-
-typedef struct message_store {
-	int size;
-	message_t* msg;
-} msg_store_t;
-
-typedef struct routing {
-	int size;
-	peer_t* table;
-} routing_t;
-
 typedef struct {
 	char* agent_name;
 	int port;
@@ -58,8 +13,23 @@ typedef struct {
 	rhandler_list_t* handler_list;
 } AgentInfo;
 
-
 extern AgentInfo* Agent;
+
+#include "Router/router.h"
+#include "Server/server.h"
+#include "Message/message.h"
+#include "Reactor/reactor.h"
+#include "Crypt/crypt.h"
+#include "Utils/utils.h"
+#include "Utils/error.h"
+#include "Queue/queue.h"
+
+
+#include <poll.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+#define MAX_ROUTE_SEQUENCE_LEN 100
 
 void initialize_agent_info(void);
 int is_agent_init(void);
