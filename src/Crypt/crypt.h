@@ -1,3 +1,6 @@
+#ifndef CRYPT_H
+#define CRYPT_H
+
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 #include <openssl/err.h>
@@ -16,3 +19,5 @@ int AES_decrypt(unsigned char* 	cipher,
 		unsigned char* 	key,
 		unsigned char* 	iv,
 		unsigned char* 	data);
+
+#endif

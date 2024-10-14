@@ -1,3 +1,6 @@
+#ifndef SERVER_H
+#define SERVER_H
+
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <openssl/ssl.h>
@@ -13,3 +16,5 @@ int read_routing_data(void* data);
 int read_routing_data_cb(void* data);
 int send_routing_data(void* data);
 int send_routing_data_cb(void* data);
+
+#endif

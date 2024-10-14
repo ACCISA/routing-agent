@@ -1,3 +1,6 @@
+#ifndef MESSAGE_H
+#define MESSAGE_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,3 +15,4 @@ void store_message(message_t* msg);
 message_t* get_message(int32_t msg_id);
 message_t* remove_message(int32_t msg_id);
 
+#endif
