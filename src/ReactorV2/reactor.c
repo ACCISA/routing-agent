@@ -80,7 +80,7 @@ add_registered_handle(rhandler_t* handler)
 		return 0;
 	}
 
-	ehandler_t* temp_handler = Agent->handler_list->handler;
+	rhandler_t* temp_handler = Agent->handler_list->handler;
 
 	while (temp_handler != NULL) {
 		if (temp_handler->next_handler == NULL) {

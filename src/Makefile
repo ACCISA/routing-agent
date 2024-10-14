@@ -1,11 +1,11 @@
-SRC_DIRS := Routing Crypt Utils Queue
+SRC_DIRS := Router Server Message ReactorV2 Crypt Utils Queue
 OBJ_DIR := obj
 BIN_DIR := bin
 
 CC := gcc
 CFLAGS := -Wall -lssl -lcrypto
 
-SRC := $(shell find $(SRC_DIRS) -name '*.c')
+SRC := $(shell find $(SRC_DIRS) -name '*.c' ! -path '*/tests/*')
 OBJ := $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRC))
 
 TARGET := $(BIN_DIR)/test_prog

@@ -1,6 +1,15 @@
 #include "../Server/server.h"
 #include "../Router/router.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <poll.h>
+
 void
 init_openssl(void)
 {
@@ -30,6 +39,49 @@ create_ssl_context(void)
 	}
 
 	return ctx;
+}
+
+void
+configure_ssl_context(SSL_CTX* ctx)
+{
+	if (SSL_CTX_use_certificate_file(ctx, "cert.pem", SSL_FILETYPE_PEM) <= 0) {
+		ERR_print_errors_fp(stderr);
+		return;
+	}
+
+	if (SSL_CTX_use_PrivateKey_file(ctx, "key.pem", SSL_FILETYPE_PEM) <= 0) {
+		ERR_print_errors_fp(stderr);
+		return;
+	}
+}
+
+int
+create_server_socket()
+{
+	int sockfd, newsockfd;
+	struct sockaddr_in addr;
+	SSL_CTX* ctx;
+
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (sockfd < 0) {
+		print_error("SERVER - Failed to create server socket");
+		return -1;
+	}
+
+	addr.sin_family 	= AF_INET;
+	addr.sin_port   	= htons(Agent->port);
+	addr.sin_addr.s_addr 	= INADDR_ANY;
+
+	if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
+		print_error("SERVER - Unable to bind");
+		return -1;
+	}
+
+	if (listen(sockfd, 1) < 0) {
+		print_error("SERVER - Failed to listen");
+	}
+	
+	return sockfd;
 }
 
 int
@@ -64,11 +116,12 @@ create_socket(const char* hostname, int port)
 SSL*
 create_ssl_connection(const char* hostname, int port)
 {
+	int sock;
 	SSL_CTX *ctx;
 	SSL *ssl;
 
 	init_openssl();
-	ctx = create_ssl_context();:
+	ctx = create_ssl_context();
 
 	sock = create_socket(hostname, port);
 
@@ -86,14 +139,25 @@ create_ssl_connection(const char* hostname, int port)
 	rhandler_t* handler = (rhandler_t*)malloc(sizeof(rhandler_t));
 
 	handler->event_handler 		= send_routing_data;
-	hadnler->event_handler_cb 	= send_routing_data_cb;
-	handler->fd 			= (struct pollfd*)malloc(sizeof(pollfd));
+	handler->event_handler_cb 	= send_routing_data_cb;
 	handler->data 			= NULL;
 	handler->next_handler 		= NULL;
 
 	REACTOR_register_handler(handler);
 
 	return ssl;
+}
+
+int
+read_routing_data(void* data)
+{
+
+}
+
+int
+read_routing_data_cb(void* data)
+{
+
 }
 
 int
@@ -113,7 +177,7 @@ send_routing_data(void* data)
 	routing_buffer->routing_header = routing_message->routing_header;
 	routing_buffer->routing_payload = routing_message->routing_payload;
 
-	SSL* ssl = create_ssl_connection(routing_message->peer->ip, routing_message->peer->ip);
+	SSL* ssl = create_ssl_connection(routing_message->peer->ip_addr, routing_message->peer->ip_addr);
 
 	if (ssl == NULL) {
 		return 1;

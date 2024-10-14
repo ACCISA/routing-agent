@@ -10,7 +10,7 @@
 #define MAX_ROUTE_SEQUENCE_LEN 100
 
 typedef struct handler {
-	struct pollfd* fd;
+	struct pollfd fd;
 	void* data;
 	int (*event_handler)(void* data);
 	int (*event_handler_cb)(void* data);

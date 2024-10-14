@@ -7,6 +7,7 @@
 #include "../Crypt/crypt.h"
 #include "../Utils/utils.h"
 #include "../Utils/error.h"
+#include "../Server/server.c"
 
 void
 free_routing_message(rmessage_t* routing_message)
@@ -91,7 +92,7 @@ read_routing_section(rheader_t* routing_header, rpayload_t* routing_payload)
 
 
 
-		REACTOR_add_job(send_tcp_message, send_tcp_message_cb, (void*)routing_message, (void*)routing_message);
+		REACTOR_add_job(send_routing_data, send_routing_data_cb, (void*)routing_message, (void*)routing_message);
 	} else {
 		message_t* prev_msg = remove_message(msg_id);
 
