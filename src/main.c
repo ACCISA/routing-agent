@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <poll.h>
 #include <unistd.h>
-#include <fcntl>
+#include <fcntl.h>
 #include <arpa/inet.h>
 
 int main(int argc, char* argv[]) {
@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 	
-	init_openssl()
+	init_openssl();
 	
 	set_agent_from_config(argv[1]);
 
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
 
 	int sockfd = create_server_socket();
 
-	rhanlder_t* server_handler = (rhandler_t*)malloc(sizeof(rhandler_t));
+	rhandler_t* server_handler = (rhandler_t*)malloc(sizeof(rhandler_t));
 
 	struct pollfd fd;
 	fd.fd = sockfd;
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 
 	server_handler->event_handler 		= read_routing_data;
 	server_handler->event_handler_cb 	= read_routing_data_cb;
-	server_handler->pollfd			= fd;
+	server_handler->fd			= fd;
 	server_handler->data 			= NULL;
 	server_handler->next_handler 		= NULL;
 
