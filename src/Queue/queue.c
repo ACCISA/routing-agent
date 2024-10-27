@@ -27,6 +27,7 @@ add_job(rqueue_t* reactor_queue, job_t* new_job, int priority)
 {
 	if (reactor_queue->job_head == NULL) {
 		reactor_queue->job_head = new_job;
+		reactor_queue->size += 1;
 		print_info("Added job to empty queue");
 		return;
 	}
@@ -45,6 +46,7 @@ add_job(rqueue_t* reactor_queue, job_t* new_job, int priority)
 	while (temp_job != NULL) {
 		if (temp_job->next_job == NULL) {
 			temp_job->next_job = new_job;
+			reactor_queue->size += 1;
 			print_info("Added low priority job to queue");
 			return;
 		}

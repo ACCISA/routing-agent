@@ -13,6 +13,19 @@
 #include <fcntl.h>
 #include <arpa/inet.h>
 
+void background_task(void* arg)
+{
+	int* num = (int*)arg;
+	*num = *num + 1;
+	printf("BG - count: %d\n", *num); 
+}
+
+void background_task_cb(void *arg)
+{
+	// re-add the task back to the reactor queue
+	REACTOR_add_job(background_task, background_task_cb, arg);
+}
+
 int main(int argc, char* argv[]) {
 	
 	if (argc != 2) {
@@ -20,27 +33,37 @@ int main(int argc, char* argv[]) {
 	}
 	
 	init_openssl();
-	
+
+	initialize_agent_info();
+
 	set_agent_from_config(argv[1]);
 
 	display_agent_info();
+	
+	int* num = (int*)malloc(sizeof(int));
+	*num = 0;
 
-	int sockfd = create_server_socket();
+	//REACTOR_add_job(background_task, background_task_cb, num);
+
+	server_t* server = create_server_struct();
 
 	rhandler_t* server_handler = (rhandler_t*)malloc(sizeof(rhandler_t));
 
 	struct pollfd fd;
-	fd.fd = sockfd;
-	fd.events = POLLIN | POLLOUT | POLLERR;
+	fd.fd = server->sockfd;
+	fd.events = POLLRDNORM;
+	printf("events: %d\n", fd.events);
 
 	server_handler->event_handler 		= read_routing_data;
 	server_handler->event_handler_cb 	= read_routing_data_cb;
 	server_handler->fd			= fd;
-	server_handler->data 			= NULL;
+	server_handler->data 			= (void*)server;
 	server_handler->next_handler 		= NULL;
 
 	REACTOR_register_handler(server_handler);
-
-	REACTOR_run_loop();
+	while(1) {
+		REACTOR_run_job();
+		REACTOR_run_loop();
+	}
 
 }

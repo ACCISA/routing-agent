@@ -61,12 +61,20 @@ configure_ssl_context(SSL_CTX* ctx)
 	}
 }
 
-int
-create_server_socket()
+server_t*
+create_server_struct()
 {
 	int sockfd, newsockfd;
 	struct sockaddr_in addr;
 	SSL_CTX* ctx;
+
+	ctx = SSL_CTX_new(TLS_server_method());
+	if (!ctx) {
+		print_error("SERVER - Failed to create ssl context");
+		return -1;
+	}
+		
+	configure_ssl_context(ctx);
 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd < 0) {
@@ -86,8 +94,12 @@ create_server_socket()
 	if (listen(sockfd, 1) < 0) {
 		print_error("SERVER - Failed to listen");
 	}
+
+	server_t* server 	= (server_t*)malloc(sizeof(server_t));
+	server->ctx 		= ctx;
+	server->sockfd 		= sockfd; 
 	
-	return sockfd;
+	return server;
 }
 
 int
@@ -98,7 +110,7 @@ create_socket(const char* hostname, int port)
 
 	sock  = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock <  0) {
-		print_error("Unable to create socket");
+		print_error("SERVER - Unable to create socket");
 		return -1;
 	}
 
@@ -107,12 +119,12 @@ create_socket(const char* hostname, int port)
 	addr.sin_port = htons(port);
 
 	if (inet_pton(AF_INET, hostname, &addr.sin_addr) <= 0) {
-		print_error("Invalid hostname/address");
+		print_error("SERVER - Invalid hostname/address");
 		return -1;
 	}
 
 	if (connect(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-		print_error("Failed to connect to agent");
+		print_error("SERVER -Failed to connect to agent");
 		return -1;
 	}
 

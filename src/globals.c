@@ -15,16 +15,21 @@ void
 initialize_agent_info(void)
 {
 	print_info("GLOBAL - Agent global variable initialized");
-	Agent = (AgentInfo*)malloc(sizeof(AgentInfo));
-	Agent->agent_name = (char*)malloc(sizeof(char)*100);
-	Agent->ip_addr = (char*)malloc(sizeof(char)*50);
-	Agent->routing = (routing_t*)malloc(sizeof(routing_t));
-	Agent->routing->size = 0;
-	Agent->routing->table = NULL;
-	Agent->msg_store = (msg_store_t*)malloc(sizeof(msg_store_t*));
-	Agent->msg_store->size = 0;
-	Agent->msg_store->msg = NULL;
-	Agent->reactor_queue = (rqueue_t*)malloc(sizeof(rqueue_t));
+	Agent 					= (AgentInfo*)malloc(sizeof(AgentInfo));
+	Agent->agent_name 			= (char*)malloc(sizeof(char)*100);
+	Agent->ip_addr 				= (char*)malloc(sizeof(char)*50);
+	Agent->routing 				= (routing_t*)malloc(sizeof(routing_t));
+	Agent->routing->size 			= 0;
+	Agent->routing->table 			= NULL;
+	Agent->msg_store 			= (msg_store_t*)malloc(sizeof(msg_store_t*));
+	Agent->msg_store->size 			= 0;
+	Agent->msg_store->msg 			= NULL;
+	Agent->reactor_queue 			= (rqueue_t*)malloc(sizeof(rqueue_t));
+	Agent->reactor_queue->size 		= 0;
+	Agent->reactor_queue->job_head 		= NULL;
+	Agent->handler_list 			= (rhandler_list_t*)malloc(sizeof(rhandler_list_t));
+	Agent->handler_list->size 		= 0;
+	Agent->handler_list->handler	 	= NULL;
 }
 
 int

@@ -11,12 +11,34 @@ REACTOR_add_job(void (*task_func)(void* func_arg),
 		void (*task_cb)(void* cb_arg),
 		void* func_arg)
 {
-	print_info("REACTOR - Added new job to reactor queue");
 	printf("[+] REACTOR - Current queue size: %d\n", Agent->reactor_queue->size);
+	print_info("REACTOR - Added new job to reactor queue");
 
 	job_t* new_job = create_job("XYZ", task_func, task_cb,  func_arg);
 	add_job(Agent->reactor_queue, new_job, 0);
+}
 
+void
+REACTOR_run_job()
+{
+	if (Agent->reactor_queue->size == 0) {
+		print_info("REACTOR - No job in reactor queue");
+		return;
+	}
+
+	job_t* job = REACTOR_get_job();
+
+	print_info("REACTOR - Running job");
+	job->task_func(job->func_arg);
+
+	print_info("REACTOR - Running job callback");
+	job->task_cb(job->func_arg);
+}
+
+job_t*
+REACTOR_get_job()
+{
+	return get_job(Agent->reactor_queue);
 }
 
 int
@@ -26,7 +48,6 @@ REACTOR_register_handler(rhandler_t* handler)
 		print_error("REACTOR - Invalid handler to register");
 		return -1;
 	}
-	
 	if (add_registered_handler(handler) < 0) {
 		print_error("REACTOR - Failed to register new event handler");
 		return -1;
@@ -55,11 +76,11 @@ get_fds()
 	}
 
 	rhandler_t* temp_handler = Agent->handler_list->handler;
-	
 	int idx = 0;
 	while (temp_handler != NULL) {
 		fds[idx] = temp_handler->fd;
 		temp_handler = temp_handler->next_handler;
+		idx++;
 	}
 
 	return fds;
@@ -70,10 +91,11 @@ REACTOR_run_loop(void)
 {
 	struct pollfd* fds = get_fds();
 
-	if (poll(fds, Agent->handler_list->size, 1000) > 0) {
+	if (poll(fds, Agent->handler_list->size+1, 1000) > 0) {
 		call_signaled_handlers();
 	} else {
 		print_error("REACTOR - Poll failure");
+		printf("[!] REACTOR - %s\n", strerror(errno));
 	}
 }
 
@@ -132,6 +154,8 @@ call_signaled_handlers(void)
 
 	while (temp_handler != NULL) {
 		if ((POLLRDNORM | POLLERR) & temp_handler->fd.revents) {
+			printf("ssss\n");
+			exit(0);
 			// do we want to just run the job now?
 			REACTOR_add_job(temp_handler->event_handler, 
 					temp_handler->event_handler_cb,
