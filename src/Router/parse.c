@@ -1,4 +1,13 @@
+#include "../Router/router.h"
+#include "../Reactor/reactor.h"
+#include "../Queue/queue.h"
+#include "../Message/message.h"
+#include "../Utils/utils.h"
+#include "../Utils/error.h"
 #include "../globals.h"
+
+#include <string.h>
+#include <stdint.h>
 
 void
 display_header_info(rheader_t* routing_header)

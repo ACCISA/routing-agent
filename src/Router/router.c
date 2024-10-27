@@ -1,13 +1,12 @@
-#define AGENT_NAME "A1"
-#define MAX_HOPS 10
-#define SEQUENCE_DELIMETER ";"
-
 #include "../Router/router.h"
+#include "../Reactor/reactor.h"
+#include "../Queue/queue.h"
 #include "../Message/message.h"
 #include "../Crypt/crypt.h"
 #include "../Utils/utils.h"
 #include "../Utils/error.h"
-#include "../Server/server.c"
+#include "../Server/server.h"
+#include "../globals.h"
 
 void
 free_routing_message(rmessage_t* routing_message)
@@ -92,7 +91,7 @@ read_routing_section(rheader_t* routing_header, rpayload_t* routing_payload)
 
 
 
-		REACTOR_add_job(send_routing_data, send_routing_data_cb, (void*)routing_message, (void*)routing_message);
+		REACTOR_add_job(send_routing_data, send_routing_data_cb, (void*)routing_message);
 	} else {
 		message_t* prev_msg = remove_message(msg_id);
 

@@ -2,6 +2,9 @@
 #include "../Utils/utils.h"
 #include "../Utils/error.h"
 #include "../Queue/queue.h"
+#include "../Router/router.h"
+#include "../Message/message.h"
+#include "../globals.h"
 
 void
 REACTOR_add_job(void (*task_func)(void* func_arg), 
@@ -24,7 +27,7 @@ REACTOR_register_handler(rhandler_t* handler)
 		return -1;
 	}
 	
-	if (add_handler_registration(handler) < 0) {
+	if (add_registered_handler(handler) < 0) {
 		print_error("REACTOR - Failed to register new event handler");
 		return -1;
 	}
@@ -36,7 +39,7 @@ REACTOR_register_handler(rhandler_t* handler)
 int
 REACTOR_unregister_handler(rhandler_t* handler)
 {
-	if (remove_handler_registration(handler) < 0) {
+	if (remove_registered_handler(handler) < 0) {
 		printf("[!] ROUTER - Unable to remove registerd handler (fd=%d)\n", handler->fd.fd);
 	}
 	printf("[+] ROUTER - Removed registered handle (fd=%d)\n", handler->fd.fd);
@@ -102,7 +105,7 @@ remove_registered_handler(rhandler_t* handler)
 }
 
 int
-add_registered_handle(rhandler_t* handler)
+add_registered_handler(rhandler_t* handler)
 {
 	if (Agent->handler_list->size == 0) {
 		Agent->handler_list->handler = handler;
@@ -130,7 +133,7 @@ call_signaled_handlers(void)
 	while (temp_handler != NULL) {
 		if ((POLLRDNORM | POLLERR) & temp_handler->fd.revents) {
 			// do we want to just run the job now?
-			RECTOR_add_job(temp_handler->event_handler, 
+			REACTOR_add_job(temp_handler->event_handler, 
 					temp_handler->event_handler_cb,
 					temp_handler->data);
 		}

@@ -1,4 +1,12 @@
+#include "../Router/router.h"
+#include "../Reactor/reactor.h"
+#include "../Message/message.h"
+#include "../Queue/queue.h"
+#include "../Utils/utils.h"
+#include "../Utils/error.h"
+
 #include "../globals.h"
+
 
 void
 display_peer_info(peer_t* peer)

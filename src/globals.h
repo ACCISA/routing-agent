@@ -1,6 +1,12 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+#include <poll.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+#define MAX_ROUTE_SEQUENCE_LEN 100
+
 typedef struct {
 	char* agent_name;
 	int port;
@@ -14,22 +20,6 @@ typedef struct {
 } AgentInfo;
 
 extern AgentInfo* Agent;
-
-#include "Router/router.h"
-#include "Server/server.h"
-#include "Message/message.h"
-#include "Reactor/reactor.h"
-#include "Crypt/crypt.h"
-#include "Utils/utils.h"
-#include "Utils/error.h"
-#include "Queue/queue.h"
-
-
-#include <poll.h>
-#include <unistd.h>
-#include <fcntl.h>
-
-#define MAX_ROUTE_SEQUENCE_LEN 100
 
 void initialize_agent_info(void);
 int is_agent_init(void);

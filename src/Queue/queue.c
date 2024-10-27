@@ -1,4 +1,6 @@
 #include "../Queue/queue.h"
+#include "../Reactor/reactor.h"
+#include "../Message/message.h"
 #include "../Utils/utils.h"
 #include "../Utils/error.h"
 #include "../globals.h"

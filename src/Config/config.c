@@ -1,6 +1,11 @@
 #include "../Utils/error.h"
 #include "../Utils/utils.h"
 #include "../Config/config.h"
+#include "../Message/message.h"
+#include "../Reactor/reactor.h"
+#include "../Router/router.h"
+#include "../Queue/queue.h"
+#include "../globals.h"
 
 #include <stdio.h>
 #include <string.h>

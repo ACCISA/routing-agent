@@ -1,5 +1,5 @@
-#ifndef SERVER_H
-#define SERVER_H
+#ifndef SERVER_H_
+#define SERVER_H_
 
 #include <openssl/bio.h>
 #include <openssl/err.h>

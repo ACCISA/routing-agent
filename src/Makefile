@@ -1,29 +1,13 @@
-SRC_DIRS := Router Server Message Reactor Crypt Utils Queue
-OBJ_DIR := obj
-BIN_DIR := bin
-
 CC := gcc
-CFLAGS := -Wall -lssl -lcrypto
+CFLAGS := -Wall
+SRC := main.c globals.c Router/*.c Server/*.c Message/*.c Reactor/*.c Crypt/*.c Utils/*.c Queue/*.c Config/*.c
+TARGET := main
 
-SRC := $(shell find $(SRC_DIRS) -name '*.c' ! -path '*/tests/*')
-OBJ := $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRC))
-
-TARGET := $(BIN_DIR)/my_program
-
-all: $(TARGET)
-
-$(TARGET): $(OBJ) | $(BIN_DIR)
-	$(CC) $(CFLAGS) $^ -o $@
-
-$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
-	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(BIN_DIR) $(OBJ_DIR):
-	mkdir -p $@
+all:
+	$(CC) $(CFLAGS) $(SRC) -lssl -lcrypto -o $(TARGET)
 
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR)
+	rm -f $(TARGET)
 
 .PHONY: all clean
 

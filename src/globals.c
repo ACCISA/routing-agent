@@ -1,6 +1,13 @@
-#include "globals.h"
 #include "Utils/utils.h"
 #include "Utils/error.h"
+#include "Queue/queue.h"
+#include "Config/config.h"
+#include "Server/server.h"
+#include "Reactor/reactor.h"
+#include "Router/router.h"
+#include "Message/message.h"
+#include "globals.h"
+
 
 AgentInfo* Agent = NULL;
 

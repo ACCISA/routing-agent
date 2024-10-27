@@ -1,5 +1,5 @@
-#ifndef CRYPT_H
-#define CRYPT_H
+#ifndef CRYPT_H_
+#define CRYPT_H_
 
 #include <openssl/evp.h>
 #include <openssl/rand.h>

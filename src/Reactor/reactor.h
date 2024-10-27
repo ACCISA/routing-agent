@@ -1,5 +1,5 @@
-#ifndef REACTOR_H
-#define REACTOR_H
+#ifndef REACTOR_H_
+#define REACTOR_H_
 
 #include <poll.h>
 

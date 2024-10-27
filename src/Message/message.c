@@ -1,4 +1,7 @@
 #include "../Message/message.h"
+#include "../Queue/queue.h"
+#include "../Reactor/reactor.h"
+#include "../Router/router.h"
 #include "../globals.h"
 
 message_t*

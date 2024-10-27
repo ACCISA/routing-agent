@@ -1,5 +1,7 @@
-#ifndef MESSAGE_H
-#define MESSAGE_H
+#ifndef MESSAGE_H_
+#define MESSAGE_H_
+
+#include "../Router/router.h"
 
 #include <stdio.h>
 #include <stdlib.h>

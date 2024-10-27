@@ -1,5 +1,5 @@
-#ifndef ROUTER_H
-#define ROUTER_H
+#ifndef ROUTER_H_
+#define ROUTER_H_
 
 #include <stdio.h>
 #include <stdlib.h>
