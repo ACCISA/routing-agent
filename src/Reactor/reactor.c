@@ -154,8 +154,6 @@ call_signaled_handlers(void)
 
 	while (temp_handler != NULL) {
 		if ((POLLRDNORM | POLLERR) & temp_handler->fd.revents) {
-			printf("ssss\n");
-			exit(0);
 			// do we want to just run the job now?
 			REACTOR_add_job(temp_handler->event_handler, 
 					temp_handler->event_handler_cb,
