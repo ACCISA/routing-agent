@@ -33,7 +33,7 @@ int REACTOR_unregister_handler(rhandler_t* handler);
 
 int remove_registered_handler(rhandler_t* handler);
 int add_registered_handler(rhandler_t* handler);
-void call_signaled_handlers(void);
-struct pollfd* get_fd(void);
+rhandler_t* get_fd_handler(int fd);
+void call_signaled_handlers(struct pollfd* fds);
 
 #endif

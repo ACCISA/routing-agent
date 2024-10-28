@@ -92,7 +92,7 @@ REACTOR_run_loop(void)
 	struct pollfd* fds = get_fds();
 
 	if (poll(fds, Agent->handler_list->size+1, 1000) > 0) {
-		call_signaled_handlers();
+		call_signaled_handlers(fds);
 	} else {
 		print_error("REACTOR - Poll failure");
 		printf("[!] REACTOR - %s\n", strerror(errno));
@@ -147,18 +147,30 @@ add_registered_handler(rhandler_t* handler)
 	}
 }
 
-void
-call_signaled_handlers(void)
+rhandler_t*
+get_fd_handler(int fd)
 {
 	rhandler_t* temp_handler = Agent->handler_list->handler;
 
 	while (temp_handler != NULL) {
-		if ((POLLRDNORM | POLLERR) & temp_handler->fd.revents) {
-			// do we want to just run the job now?
-			REACTOR_add_job(temp_handler->event_handler, 
-					temp_handler->event_handler_cb,
-					temp_handler->data);
+		if (temp_handler->fd.fd == fd) return temp_handler;
+	}
+	
+	return -1;
+}
+
+void
+call_signaled_handlers(struct pollfd* fds)
+{
+	rhandler_t* handler;
+
+	for (int i = 0; i < Agent->handler_list->size; i++) {
+		if ((POLLRDNORM | POLLERR) & fds[i].revents) {
+			if ((handler = get_fd_handler(fds[i].fd)) != -1) {
+				REACTOR_add_job(handler->event_handler, 
+						handler->event_handler_cb,
+						handler->data);	
+			}
 		}
-		temp_handler = temp_handler->next_handler;
 	}
 }
