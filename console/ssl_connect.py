@@ -3,9 +3,11 @@ import ssl
 
 def connect_to_tls_server(host, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    
+
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-    context.load_default_certs()
+
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
 
     tls_socket = context.wrap_socket(sock, server_hostname=host)
 
