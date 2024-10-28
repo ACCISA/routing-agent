@@ -52,10 +52,9 @@ int main(int argc, char* argv[]) {
 	struct pollfd fd;
 	fd.fd = server->sockfd;
 	fd.events = POLLRDNORM;
-	printf("events: %d\n", fd.events);
 
-	server_handler->event_handler 		= read_routing_data;
-	server_handler->event_handler_cb 	= read_routing_data_cb;
+	server_handler->event_handler 		= accept_client_connection;
+	server_handler->event_handler_cb 	= accept_client_connection_cb;
 	server_handler->fd			= fd;
 	server_handler->data 			= (void*)server;
 	server_handler->next_handler 		= NULL;

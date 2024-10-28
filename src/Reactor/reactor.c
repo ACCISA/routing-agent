@@ -154,6 +154,7 @@ get_fd_handler(int fd)
 
 	while (temp_handler != NULL) {
 		if (temp_handler->fd.fd == fd) return temp_handler;
+		temp_handler = temp_handler->next_handler;
 	}
 	
 	return -1;

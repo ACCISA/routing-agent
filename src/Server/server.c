@@ -167,18 +167,6 @@ create_ssl_connection(const char* hostname, int port)
 }
 
 int
-read_routing_data(void* data)
-{
-
-}
-
-int
-read_routing_data_cb(void* data)
-{
-
-}
-
-int
 send_routing_data(void* data)
 {
 	unsigned char buffer[300];
