@@ -85,7 +85,6 @@ read_routing_data(void* data)
 	if (bytes > 0) {
 		buffer[bytes] = 0;
 		print_hex(buffer, bytes);
-		SSL_write(connection->ssl, "HELLO", strlen("HELLO"));
 	}
 	
 	header = (unsigned char*)malloc(sizeof(unsigned char)*50);
@@ -113,10 +112,8 @@ read_routing_data(void* data)
 	
 	display_header_info(routing_header);
 
-	SSL_shutdown(connection->ssl);
-	SSL_free(connection->ssl);
-	close(connection->clientfd);
-	exit(0);
+	process_route_sequence(routing_header, routing_payload, connection);
+
 }
 
 int

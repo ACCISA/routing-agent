@@ -1,6 +1,8 @@
 #ifndef ROUTER_H_
 #define ROUTER_H_
 
+#include "../Server/server.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,6 +24,7 @@ typedef struct RoutingHeader {
 	int8_t		is_destination;
 	int8_t 		is_forward;
 	int8_t 		has_response;
+	int8_t		instruction;
 	int32_t 	num_sections;
 	int32_t 	cur_section;
 	int32_t 	response_len;
@@ -53,8 +56,8 @@ rpayload_t* create_routing_payload(unsigned char* data, int32_t num_sections, in
 
 void free_routing_message(rmessage_t* routing_message);
 void read_routing_seection(unsigned char* encrypted_section_sequence, int enc_sequence_len, int is_forward, char* msg_id);
-int process_route_sequence(rheader_t* routing_header, rpayload_t* routing_payload);
-int process_instruction(rheader_t* routing_header, rpayload_t* routing_payload);
+int process_route_sequence(rheader_t* routing_header, rpayload_t* routing_payload, connection_t* connection);
+int process_instruction(rheader_t* routing_header, rpayload_t* routing_payload, connection_t* connection);
 
 
 void display_peer_info(peer_t* peer);

@@ -14,10 +14,11 @@ display_header_info(rheader_t* routing_header)
 {
 	printf("---------------------------------------------------\n");
 	print_info("ROUTER - Displaying routing header");
-	printf("[+] ROUTER - (is_destination=%d), (is_forward=%d), (has_response=%d)\n",
+	printf("[+] ROUTER - (is_destination=%d), (is_forward=%d), (has_response=%d), (instruction=%d)\n",
 			routing_header->is_destination,
 			routing_header->is_forward,
-			routing_header->has_response);
+			routing_header->has_response,
+			routing_header->instruction);
 	printf("[+] ROUTER - (num_sections=%d), (cur_section=%d), (response_len=%d)\n",
 			routing_header->num_sections,
 			routing_header->cur_section,
@@ -76,13 +77,14 @@ create_routing_header(unsigned char* data)
 	memcpy(&routing_header->is_destination, data, sizeof(int8_t));
 	memcpy(&routing_header->is_forward, data + sizeof(int8_t), sizeof(int8_t));
 	memcpy(&routing_header->has_response, data + 2 * sizeof(int8_t), sizeof(int8_t));
-	memcpy(&routing_header->num_sections, data + 3 * sizeof(int8_t), sizeof(int32_t));
-	memcpy(&routing_header->cur_section, data  + 3 * sizeof(int8_t) + sizeof(int32_t), sizeof(int32_t));
-	memcpy(&routing_header->response_len, data + 3 * sizeof(int8_t) + 2 * sizeof(int32_t), sizeof(int32_t));
-	memcpy(&routing_header->msg_id, data + 3 * sizeof(int8_t) + 3 * sizeof(int32_t), sizeof(int32_t));
+	memcpy(&routing_header->instruction, data + 3 * sizeof(int8_t), sizeof(int8_t));
+	memcpy(&routing_header->num_sections, data + 4 * sizeof(int8_t), sizeof(int32_t));
+	memcpy(&routing_header->cur_section, data  + 4 * sizeof(int8_t) + sizeof(int32_t), sizeof(int32_t));
+	memcpy(&routing_header->response_len, data + 4 * sizeof(int8_t) + 2 * sizeof(int32_t), sizeof(int32_t));
+	memcpy(&routing_header->msg_id, data + 4 * sizeof(int8_t) + 3 * sizeof(int32_t), sizeof(int32_t));
 	routing_header->sections_len = (int32_t*)malloc(sizeof(int32_t)*routing_header->num_sections);
 	for (int i = 0; i < routing_header->num_sections; i++) {
-		memcpy(&routing_header->sections_len[i], data + 3 * sizeof(int8_t) + 4 * sizeof(int32_t) + i * sizeof(int32_t), sizeof(int32_t));
+		memcpy(&routing_header->sections_len[i], data + 4 * sizeof(int8_t) + 4 * sizeof(int32_t) + i * sizeof(int32_t), sizeof(int32_t));
 	}
 	print_info("ROUTER - Created routing header struct");
 

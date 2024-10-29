@@ -6,6 +6,7 @@
 #include "../Utils/utils.h"
 #include "../Utils/error.h"
 #include "../Server/server.h"
+#include "../Instructor/task.h"
 #include "../globals.h"
 
 void
@@ -118,21 +119,46 @@ read_routing_section(rheader_t* routing_header, rpayload_t* routing_payload)
 
 }
 
+void
+send_instruction_response_cb(void* data)
+{
+	task_t* task = (task_t*)data;
+
+	printf("running cb for instruction\n");
+	printf("host: %s\n", task->result);
+	printf("dd: %d\n", strlen(task->result));
+	printf("pp: %p\n", task->connection->ssl);
+
+	SSL_write(task->connection->ssl, (const char*)task->result, strlen(task->result));
+	SSL_shutdown(task->connection->ssl);
+	SSL_free(task->connection->ssl);
+	close(task->connection->clientfd);
+
+	exit(0);
+}
+
 int
-process_instruction(rheader_t* routing_header, rpayload_t* routing_payload)
+process_instruction(rheader_t* routing_header, rpayload_t* routing_payload, connection_t* connection)
 {
 	print_info("ROUTER - Added instruction to reactor queue");
 	// TODO process instruction and add to reactor queue
+	// instruction_func = get_instruction(routing_header->instruction);
+	// intruct_cb = get_instruction_cb(routing_header->instruction);
 	// REACTOR_add_job(do_instruction, do_instruction_cb, , );
+	task_t* task = (task_t*)malloc(sizeof(task_t));
+	task->connection = connection;
+
+	REACTOR_add_job(get_hostname_instruction, send_instruction_response_cb, task);
+
 	return 0;
 }
 
 int
-process_route_sequence(rheader_t* routing_header, rpayload_t* routing_payload)
+process_route_sequence(rheader_t* routing_header, rpayload_t* routing_payload, connection_t* connection)
 {
 	if (routing_header->is_destination) {
 		print_info("ROUTER - Message arrived at destination, instruction added to queue");
-		return process_instruction(routing_header, routing_payload);
+		return process_instruction(routing_header, routing_payload, connection);
 	}
 
 	read_routing_section(routing_header, routing_payload);
