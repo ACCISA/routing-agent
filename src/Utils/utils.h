@@ -6,5 +6,6 @@
 #include <string.h>
 
 void print_info(char* str);
+void print_hex(unsigned char* buffer, int len);
 
 #endif

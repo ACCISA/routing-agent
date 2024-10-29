@@ -71,7 +71,7 @@ create_server_struct()
 	ctx = SSL_CTX_new(TLS_server_method());
 	if (!ctx) {
 		print_error("SERVER - Failed to create ssl context");
-		return -1;
+		return NULL;
 	}
 		
 	configure_ssl_context(ctx);
@@ -79,7 +79,7 @@ create_server_struct()
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd < 0) {
 		print_error("SERVER - Failed to create server socket");
-		return -1;
+		return NULL;
 	}
 
 	addr.sin_family 	= AF_INET;
@@ -88,7 +88,7 @@ create_server_struct()
 
 	if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
 		print_error("SERVER - Unable to bind");
-		return -1;
+		return NULL;
 	}
 
 	if (listen(sockfd, 1) < 0) {

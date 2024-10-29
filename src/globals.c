@@ -30,6 +30,8 @@ initialize_agent_info(void)
 	Agent->handler_list 			= (rhandler_list_t*)malloc(sizeof(rhandler_list_t));
 	Agent->handler_list->size 		= 0;
 	Agent->handler_list->handler	 	= NULL;
+	Agent->decrypt_key			= (unsigned char*)malloc(sizeof(unsigned char)*32);
+	Agent->iv				= (unsigned char*)malloc(sizeof(unsigned char)*16);
 }
 
 int
@@ -81,7 +83,7 @@ set_agent_key(unsigned char* decrypt_key)
 {
 	if (is_agent_init() == 0) return;
 	print_info("GLOBAL - Set global variable decrypt_key");
-	Agent->decrypt_key = decrypt_key;
+	strncpy(Agent->decrypt_key, decrypt_key, 32);
 }
 
 void
@@ -89,7 +91,7 @@ set_agent_iv(unsigned char* iv)
 {
 	if (is_agent_init() == 0) return;
 	print_info("GLOBAL - Set global variable iv");
-	Agent->iv = iv;
+	strncpy(Agent->iv, iv, 16);
 }
 
 void

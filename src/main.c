@@ -31,6 +31,8 @@ int main(int argc, char* argv[]) {
 	if (argc != 2) {
 		return 1;
 	}
+
+	server_t* server;
 	
 	init_openssl();
 
@@ -45,7 +47,10 @@ int main(int argc, char* argv[]) {
 
 	//REACTOR_add_job(background_task, background_task_cb, num);
 
-	server_t* server = create_server_struct();
+	if ((server = create_server_struct()) == NULL) {
+		print_error("MAIN - Unable to create server struct");
+		return 1;	
+	}
 
 	rhandler_t* server_handler = (rhandler_t*)malloc(sizeof(rhandler_t));
 
@@ -58,6 +63,7 @@ int main(int argc, char* argv[]) {
 	server_handler->fd			= fd;
 	server_handler->data 			= (void*)server;
 	server_handler->next_handler 		= NULL;
+
 
 	REACTOR_register_handler(server_handler);
 	while(1) {

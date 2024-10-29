@@ -1,5 +1,9 @@
 #include "../Reactor/reactor.h"
 #include "../Server/server.h"
+#include "../Utils/utils.h"
+#include "../Message/message.h"
+#include "../Router/router.h"
+#include "../globals.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,9 +59,18 @@ accept_client_connection_cb(void* data)
 	return 0;
 }
 
+//TODO error handling
 int
 read_routing_data(void* data)
 {
+	int header_len;
+	int payload_len;
+	unsigned char* header;
+	unsigned char* payload;
+	rheader_t* routing_header;
+	rpayload_t* routing_payload;
+
+
 	connection_t* connection = (connection_t*) data;
 	if (SSL_accept(connection->ssl) <= 0) {
 		print_error("SERVER - Failed to perform ssl handshake");
@@ -71,9 +84,35 @@ read_routing_data(void* data)
 	bytes = SSL_read(connection->ssl, buffer, sizeof(buffer)-1);
 	if (bytes > 0) {
 		buffer[bytes] = 0;
-		printf("gotten: %s\n", buffer);
+		print_hex(buffer, bytes);
 		SSL_write(connection->ssl, "HELLO", strlen("HELLO"));
 	}
+	
+	header = (unsigned char*)malloc(sizeof(unsigned char)*50);
+	payload = (unsigned char*)malloc(sizeof(unsigned char)*50);
+
+	if (parse_routing_message(buffer, bytes, header, &header_len, payload, &payload_len) == -1) {
+		print_error("SERVER - Failed to create header buffer");
+		return -1;
+	}	
+
+	printf("h_len: %d\n", header_len);
+	print_hex(header, header_len);
+	printf("p_len: %d\n", payload_len);
+	print_hex(payload, payload_len);
+
+	if ((routing_header = create_routing_header(header)) == NULL) {
+		print_error("SERVER - Failed to create routing header");
+		return -1;	
+	}
+
+	if ((routing_payload = create_routing_payload(payload, routing_header->num_sections, routing_header->sections_len)) == NULL) {
+		print_error("SERVER - Failed to create routing payload");
+		return -1;
+	}
+	
+	display_header_info(routing_header);
+
 	SSL_shutdown(connection->ssl);
 	SSL_free(connection->ssl);
 	close(connection->clientfd);

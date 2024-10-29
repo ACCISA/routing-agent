@@ -33,26 +33,38 @@ display_header_info(rheader_t* routing_header)
 int
 parse_routing_message(unsigned char* data, int data_len, unsigned char* header_data, int* header_len, unsigned char* payload_data, int* payload_len)
 {
-	int i;
 	int header_idx = 0;
 	int payload_idx = 0;
 	int found3B = 0;
+	unsigned char* dec_data = (unsigned char*)malloc(sizeof(unsigned char)*100);
 
-	for (i = 0; i < data_len; i++) {
-		if (data[i] == 0x3B) {
+	if ((data_len = AES_decrypt(data, data_len,
+					Agent->decrypt_key,
+					Agent->iv,
+					dec_data)) == 1) {
+		print_error("ROUTER - Failed to decrypt routing message");
+		return -1;
+	}
+
+	dec_data[data_len] = '\0';
+	print_hex(dec_data, data_len);
+	
+	//TODO deal with bad formats
+	for (int i = 0; i < data_len; i++) {
+		if (dec_data[i] == 0x3B) {
 			found3B = 1;
 			continue;
 		}
 
 		if (!found3B) {
-			header_data[header_idx++] = data[i];
+			header_data[header_idx++] = dec_data[i];
 		} else {
-			payload_data[payload_idx++] = data[i];
+			payload_data[payload_idx++] = dec_data[i];
 		}
 	}
 
-	*header_len = header_idx+1;
-	*payload_len = payload_idx+1;
+	*header_len = header_idx;
+	*payload_len = payload_idx;
 
 	return 0;
 }
