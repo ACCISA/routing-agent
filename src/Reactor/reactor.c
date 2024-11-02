@@ -58,12 +58,12 @@ REACTOR_register_handler(rhandler_t* handler)
 }
 
 int
-REACTOR_unregister_handler(rhandler_t* handler)
+REACTOR_unregister_handler(int fd)
 {
-	if (remove_registered_handler(handler) < 0) {
-		printf("[!] ROUTER - Unable to remove registerd handler (fd=%d)\n", handler->fd.fd);
+	if (remove_registered_handler(fd) < 0) {
+		printf("[!] ROUTER - Unable to remove registerd handler (fd=%d)\n", fd);
 	}
-	printf("[+] ROUTER - Removed registered handle (fd=%d)\n", handler->fd.fd);
+	printf("[+] ROUTER - Removed registered handle (fd=%d)\n", fd);
 }
 
 struct pollfd*
@@ -94,14 +94,14 @@ REACTOR_run_loop(void)
 	if (poll(fds, Agent->handler_list->size+1, 1000) > 0) {
 		call_signaled_handlers(fds);
 	} else {
-		print_error("REACTOR - Poll failure");
-		printf("[!] REACTOR - %s\n", strerror(errno));
+		if (errno == 0) return 0;
+		printf("[+] REACTOR - %s\n", strerror(errno));
 	}
 }
 
 // TODO rewrite this
 int
-remove_registered_handler(rhandler_t* handler)
+remove_registered_handler(int fd)
 {
 	if (Agent->handler_list->size == 0) return 0;
 
@@ -110,13 +110,16 @@ remove_registered_handler(rhandler_t* handler)
 
 
 	while (temp_handler != NULL) {
-		if (temp_handler->fd.fd  == handler->fd.fd) {
+		if (temp_handler->fd.fd  == fd) {
 			if (prev_handler == NULL) {
+				rhandler_t* rm_handler = Agent->handler_list->handler;
 				Agent->handler_list->handler = Agent->handler_list->handler->next_handler;
+				free(rm_handler);
 				Agent->handler_list->size--;
 				return 0;
 			}
 			prev_handler->next_handler = temp_handler->next_handler;
+			free(temp_handler);
 			Agent->handler_list->size--;
 			return 0;
 		}
@@ -171,6 +174,7 @@ call_signaled_handlers(struct pollfd* fds)
 				REACTOR_add_job(handler->event_handler, 
 						handler->event_handler_cb,
 						handler->data);	
+				free(fds);
 			}
 		}
 	}

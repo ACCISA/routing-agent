@@ -29,9 +29,9 @@ void REACTOR_run_job(void);
 job_t* REACTOR_get_job(void);
 int REACTOR_register_handler(rhandler_t* handler);
 int REACTOR_run_loop(void);
-int REACTOR_unregister_handler(rhandler_t* handler);
+int REACTOR_unregister_handler(int fd);
 
-int remove_registered_handler(rhandler_t* handler);
+int remove_registered_handler(int fd);
 int add_registered_handler(rhandler_t* handler);
 rhandler_t* get_fd_handler(int fd);
 void call_signaled_handlers(struct pollfd* fds);

@@ -124,17 +124,15 @@ send_instruction_response_cb(void* data)
 {
 	task_t* task = (task_t*)data;
 
-	printf("running cb for instruction\n");
 	printf("host: %s\n", task->result);
-	printf("dd: %d\n", strlen(task->result));
-	printf("pp: %p\n", task->connection->ssl);
 
 	SSL_write(task->connection->ssl, (const char*)task->result, strlen(task->result));
 	SSL_shutdown(task->connection->ssl);
 	SSL_free(task->connection->ssl);
 	close(task->connection->clientfd);
-
-	exit(0);
+	REACTOR_unregister_handler(task->connection->clientfd);
+	free(task);
+	task = NULL;
 }
 
 int
