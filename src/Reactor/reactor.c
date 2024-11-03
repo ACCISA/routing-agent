@@ -4,6 +4,7 @@
 #include "../Queue/queue.h"
 #include "../Router/router.h"
 #include "../Message/message.h"
+#include "../Instructor/task.h"
 #include "../globals.h"
 
 void

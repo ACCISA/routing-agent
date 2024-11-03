@@ -5,6 +5,7 @@
 #include "../Reactor/reactor.h"
 #include "../Router/router.h"
 #include "../Queue/queue.h"
+#include "../Instructor/task.h"
 #include "../globals.h"
 
 #include <stdio.h>

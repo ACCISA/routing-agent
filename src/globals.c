@@ -6,6 +6,8 @@
 #include "Reactor/reactor.h"
 #include "Router/router.h"
 #include "Message/message.h"
+#include "Instructor/task.h"
+#include "Instructor/commands.h"
 #include "globals.h"
 
 
@@ -32,6 +34,9 @@ initialize_agent_info(void)
 	Agent->handler_list->handler	 	= NULL;
 	Agent->decrypt_key			= (unsigned char*)malloc(sizeof(unsigned char)*32);
 	Agent->iv				= (unsigned char*)malloc(sizeof(unsigned char)*16);
+	Agent->commands_list			= (commands_list_t*)malloc(sizeof(commands_list_t));
+	Agent->commands_list->size		= 0;
+	Agent->commands_list->command		= NULL;
 }
 
 int
@@ -106,5 +111,10 @@ display_agent_info(void)
 	printf("[+] agent_name: %s\n", Agent->agent_name);
 	printf("[+] ip_addr: %s\n", Agent->ip_addr);
 	printf("[+] port: %d\n", Agent->port);
+	printf("[+] peer_table_size: %d\n", Agent->routing->size);
+	printf("[+] message_store_size: %d\n", Agent->msg_store->size);
+	printf("[+] reactor_queue_size: %d\n", Agent->reactor_queue->size);
+	printf("[+] handler_list_size: %d\n", Agent->handler_list->size);
+	printf("[+] commands_list_size: %d\n", Agent->commands_list->size);
 
 }

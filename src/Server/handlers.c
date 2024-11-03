@@ -3,6 +3,7 @@
 #include "../Utils/utils.h"
 #include "../Message/message.h"
 #include "../Router/router.h"
+#include "../Instructor/task.h"
 #include "../globals.h"
 
 #include <stdio.h>
@@ -120,4 +121,20 @@ int
 read_routing_data_cb(void* data)
 {
 
+}
+
+int
+send_instruction_response_cb(void* data)
+{
+	task_t* task = (task_t*)data;
+
+	printf("host: %s\n", task->result);
+
+	SSL_write(task->connection->ssl, (const char*)task->result, strlen(task->result));
+	SSL_shutdown(task->connection->ssl);
+	SSL_free(task->connection->ssl);
+	close(task->connection->clientfd);
+	REACTOR_unregister_handler(task->connection->clientfd);
+	free(task);
+	task = NULL;
 }

@@ -17,6 +17,7 @@ typedef struct {
 	msg_store_t* msg_store;
 	rqueue_t* reactor_queue;
 	rhandler_list_t* handler_list;
+	commands_list_t* commands_list;
 } AgentInfo;
 
 extern AgentInfo* Agent;

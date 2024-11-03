@@ -4,7 +4,8 @@
 #include "../Queue/queue.h"
 #include "../Utils/utils.h"
 #include "../Utils/error.h"
-
+#include "../Instructor/task.h"
+#include "../Instructor/commands.h"
 #include "../globals.h"
 
 

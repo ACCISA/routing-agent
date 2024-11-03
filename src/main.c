@@ -3,6 +3,8 @@
 #include "Reactor/reactor.h"
 #include "Router/router.h"
 #include "Message/message.h"
+#include "Instructor/commands.h"
+#include "Instructor/task.h"
 #include "Queue/queue.h"
 #include "globals.h"
 
@@ -37,6 +39,7 @@ int main(int argc, char* argv[]) {
 	init_openssl();
 
 	initialize_agent_info();
+	initialize_commands();
 
 	set_agent_from_config(argv[1]);
 

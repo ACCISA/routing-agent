@@ -119,35 +119,23 @@ read_routing_section(rheader_t* routing_header, rpayload_t* routing_payload)
 
 }
 
-void
-send_instruction_response_cb(void* data)
-{
-	task_t* task = (task_t*)data;
 
-	printf("host: %s\n", task->result);
-
-	SSL_write(task->connection->ssl, (const char*)task->result, strlen(task->result));
-	SSL_shutdown(task->connection->ssl);
-	SSL_free(task->connection->ssl);
-	close(task->connection->clientfd);
-	REACTOR_unregister_handler(task->connection->clientfd);
-	free(task);
-	task = NULL;
-}
 
 int
 process_instruction(rheader_t* routing_header, rpayload_t* routing_payload, connection_t* connection)
 {
-	print_info("ROUTER - Added instruction to reactor queue");
-	// TODO process instruction and add to reactor queue
-	// instruction_func = get_instruction(routing_header->instruction);
-	// intruct_cb = get_instruction_cb(routing_header->instruction);
-	// REACTOR_add_job(do_instruction, do_instruction_cb, , );
+	func_ptr_type* instruction_funcs = get_instruction(routing_header->instruction);
+	if (instruction_funcs == NULL) {
+		print_error("ROUTER - Unable to find valid command");
+		return -1;
+	}
 	task_t* task = (task_t*)malloc(sizeof(task_t));
 	task->connection = connection;
 
-	REACTOR_add_job(get_hostname_instruction, send_instruction_response_cb, task);
-
+	print_info("ROUTER - Added instruction to reactor queue");
+	// TODO if instruction_funcs index 1 is NULL set it to send_instruction_response_cb
+	// this way we choose if we want to add functionality to our callbacks
+	REACTOR_add_job(instruction_funcs[0], send_instruction_response_cb, task);
 	return 0;
 }
 

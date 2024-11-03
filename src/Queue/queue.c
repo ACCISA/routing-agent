@@ -3,6 +3,7 @@
 #include "../Message/message.h"
 #include "../Utils/utils.h"
 #include "../Utils/error.h"
+#include "../Instructor/task.h"
 #include "../globals.h"
 
 job_t*

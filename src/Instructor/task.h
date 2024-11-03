@@ -13,10 +13,25 @@ typedef struct task {
 	char* result;
 } task_t;
 
-int get_instruction_func(int instruction);
-int get_instruction_cb(int instruction);
-int initialize_instructions(void);
+typedef struct command {
+	int command_num;
+	int (*command_func)(void* data);
+	int (*command_cb)(void* data);
+	struct commands* next_command;
+} command_t;
 
-void get_hostname_instruction(void* data);
+typedef struct commands_list {
+	int size;
+	command_t* command;
+} commands_list_t;
+
+typedef int (*func_ptr_type)(void*);
+
+func_ptr_type* get_instruction(int instruction);
+command_t* create_command(int command_num, int (*command_func)(void* data),
+		int (*command_cb)(void* data));
+int get_instruction_cb(int instruction);
+int initialize_commands(void);
+
 
 #endif
