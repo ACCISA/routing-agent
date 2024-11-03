@@ -75,6 +75,7 @@ read_routing_data(void* data)
 	connection_t* connection = (connection_t*) data;
 	if (SSL_accept(connection->ssl) <= 0) {
 		print_error("SERVER - Failed to perform ssl handshake");
+		close(connection->clientfd);
 		return -1;
 	}
 
