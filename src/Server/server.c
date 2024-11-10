@@ -125,7 +125,8 @@ create_socket(const char* hostname, int port)
 	}
 
 	if (connect(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-		print_error("SERVER -Failed to connect to agent");
+		printf("agent %s %d\n", hostname, port);
+		print_error("SERVER - Failed to connect to agent");
 		return -1;
 	}
 
@@ -183,8 +184,7 @@ send_routing_data(void* data)
 
 	routing_buffer->routing_header = routing_message->routing_header;
 	routing_buffer->routing_payload = routing_message->routing_payload;
-
-	SSL* ssl = create_ssl_connection(routing_message->peer->ip_addr, routing_message->peer->ip_addr);
+	SSL* ssl = create_ssl_connection(routing_message->peer->ip_addr, routing_message->peer->port);
 
 	if (ssl == NULL) {
 		return 1;
@@ -192,7 +192,7 @@ send_routing_data(void* data)
 
 	memcpy(routing_buffer, buffer, sizeof(routing_buffer));
 
-	printf("[+] SERVER - Sending %d bytes\n", sizeof(routing_buffer));
+	//if (AES_encrypt(buffer, 
 
 	if (SSL_write(ssl, buffer, sizeof(routing_buffer)) <= 0) {
 		ERR_print_errors_fp(stderr);

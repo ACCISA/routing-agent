@@ -49,6 +49,8 @@ add_peer_entry(peer_t* new_peer)
 	new_peer->next_peer = Agent->routing->table;
 	Agent->routing->table = new_peer;
 	Agent->routing->size++;
+	printf("added\n");
+	display_peer_table();
 }
 
 peer_t*

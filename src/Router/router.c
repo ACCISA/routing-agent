@@ -29,12 +29,13 @@ free_routing_message(rmessage_t* routing_message)
 void
 read_routing_section(rheader_t* routing_header, rpayload_t* routing_payload)
 {
-	unsigned char* encrypted_section_sequence = (unsigned char*)routing_payload->sections[routing_header->cur_section-1];
+	unsigned char* section_sequence = (unsigned char*)routing_payload->sections[routing_header->cur_section-1];
 	int enc_sequence_len = routing_header->sections_len[routing_header->cur_section-1];
 	int is_forward = routing_header->is_forward;
 	int32_t msg_id = routing_header->msg_id;
-	unsigned char section_sequence[30];
+	//unsigned char section_sequence[30];
 	int data_len = 0;
+	/*
 	if ((data_len = AES_decrypt(encrypted_section_sequence, enc_sequence_len, 
 					Agent->decrypt_key,
 					Agent->iv,
@@ -43,13 +44,13 @@ read_routing_section(rheader_t* routing_header, rpayload_t* routing_payload)
 		return;
 	}
 
-	section_sequence[data_len] = '\0';
+	section_sequence[data_len] = '\0';*/
 	printf("[+] ROUTER - Decrypted routing sequence: %s\n", section_sequence);
 
 	char* prev_agent_name = strtok((char*)section_sequence, ",");
 	char* cur_agent_name = strtok(NULL, ",");
 	char* next_agent_name = strtok(NULL, ",");
-	
+
 	if (prev_agent_name == NULL || cur_agent_name == NULL || next_agent_name == NULL) {
 		print_error("ROUTER - Failed to tokenise section");
 		return;
@@ -57,8 +58,10 @@ read_routing_section(rheader_t* routing_header, rpayload_t* routing_payload)
 
 	peer_t* prev_peer;
 	peer_t* next_peer;
-
+	
+	display_peer_table();
 	if ((prev_peer = find_peer_info(prev_agent_name)) == NULL) {
+		printf("prev: %s\n", prev_agent_name);
 		print_error("ROUTER - Failed to find prev peer from routing sequence");
 		return;
 	}
@@ -89,8 +92,6 @@ read_routing_section(rheader_t* routing_header, rpayload_t* routing_payload)
 		routing_message->routing_header  = routing_header;
 		routing_message->routing_payload = routing_payload;
 		routing_message->peer  		 = next_peer;
-
-
 
 		REACTOR_add_job(send_routing_data, send_routing_data_cb, (void*)routing_message);
 	} else {

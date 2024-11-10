@@ -67,7 +67,6 @@ int main(int argc, char* argv[]) {
 	server_handler->data 			= (void*)server;
 	server_handler->next_handler 		= NULL;
 
-
 	REACTOR_register_handler(server_handler);
 	while(1) {
 		REACTOR_run_job();

@@ -76,6 +76,8 @@ read_routing_data(void* data)
 	if (SSL_accept(connection->ssl) <= 0) {
 		print_error("SERVER - Failed to perform ssl handshake");
 		close(connection->clientfd);
+		REACTOR_unregister_handler(connection->clientfd);
+		free(connection);
 		return -1;
 	}
 
@@ -94,6 +96,10 @@ read_routing_data(void* data)
 
 	if (parse_routing_message(buffer, bytes, header, &header_len, payload, &payload_len) == -1) {
 		print_error("SERVER - Failed to create header buffer");
+		close(connection->clientfd);
+		REACTOR_unregister_handler(connection->clientfd);
+		free(header);
+		free(payload);
 		return -1;
 	}	
 
@@ -104,11 +110,19 @@ read_routing_data(void* data)
 
 	if ((routing_header = create_routing_header(header)) == NULL) {
 		print_error("SERVER - Failed to create routing header");
+		close(connection->clientfd);
+		REACTOR_unregister_handler(connection->clientfd);
+		free(header);
+		free(payload);
 		return -1;	
 	}
 
 	if ((routing_payload = create_routing_payload(payload, routing_header->num_sections, routing_header->sections_len)) == NULL) {
+		close(connection->clientfd);
+		REACTOR_unregister_handler(connection->clientfd);
 		print_error("SERVER - Failed to create routing payload");
+		free(header);
+		free(payload);
 		return -1;
 	}
 	
