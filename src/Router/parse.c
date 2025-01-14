@@ -6,6 +6,7 @@
 #include "../Utils/error.h"
 #include "../Instructor/task.h"
 #include "../Instructor/commands.h"
+#include "../Crypt/crypt.h"
 #include "../globals.h"
 
 #include <string.h>
