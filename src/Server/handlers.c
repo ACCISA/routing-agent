@@ -88,6 +88,8 @@ read_routing_data(void* data)
 	bytes = SSL_read(connection->ssl, buffer, sizeof(buffer)-1);
 	if (bytes > 0) {
 		buffer[bytes] = 0;
+		printf("size: %d\n", bytes);
+		printf("sizeof: %d\n", sizeof(buffer)-1);
 		print_hex(buffer, bytes);
 	}
 	
