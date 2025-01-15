@@ -70,6 +70,8 @@ REACTOR_unregister_handler(int fd)
 struct pollfd*
 get_fds()
 {
+	printf("malloc call: %d\n",Agent->handler_list->size);
+	printf("malloc mult: %d\n",sizeof(struct pollfd));
 	struct pollfd* fds = (struct pollfd*)malloc(sizeof(struct pollfd) * Agent->handler_list->size);
 	if (fds == NULL) {
 		print_error("REACTOR - Failed to malloc pollfd");
