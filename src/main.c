@@ -6,6 +6,8 @@
 #include "Instructor/commands.h"
 #include "Instructor/task.h"
 #include "Queue/queue.h"
+#include "Utils/error.h"
+#include "Utils/utils.h"
 #include "globals.h"
 
 #include <stdio.h>
