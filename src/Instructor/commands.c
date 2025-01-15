@@ -27,7 +27,7 @@ int
 get_hostname_command_cb(void* data)
 {
 	print_info("INSTRUCTOR - Running get_hostname_command_cb");
-	REACTOR_add_job(send_routing_data, send_routing_data_cb, (task_t*)data);
+	REACTOR_add_job((void (*) (void *)) send_routing_data, (void (*) (void *)) send_routing_data_cb, (task_t*)data);
 	return 0;
 }
 
@@ -43,5 +43,5 @@ int
 print_agent_info_command_cb(void* data)
 {
 	print_info("INSTRUCTOR - Running print_agent_info_command_cb");
-	REACTOR_add_job(send_routing_data, send_routing_data_cb, (task_t*)data);
+	REACTOR_add_job((void (*) (void *)) send_routing_data, (void (*) (void *)) send_routing_data_cb, (task_t*)data);
 }

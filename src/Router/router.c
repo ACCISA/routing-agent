@@ -93,7 +93,7 @@ read_routing_section(rheader_t* routing_header, rpayload_t* routing_payload)
 		routing_message->routing_payload = routing_payload;
 		routing_message->peer  		 = next_peer;
 
-		REACTOR_add_job(send_routing_data, send_routing_data_cb, (void*)routing_message);
+		REACTOR_add_job((void (*) (void *)) send_routing_data, (void (*) (void *)) send_routing_data_cb, (void*)routing_message);
 	} else {
 		message_t* prev_msg = remove_message(msg_id);
 
@@ -136,7 +136,7 @@ process_instruction(rheader_t* routing_header, rpayload_t* routing_payload, conn
 	print_info("ROUTER - Added instruction to reactor queue");
 	// TODO if instruction_funcs index 1 is NULL set it to send_instruction_response_cb
 	// this way we choose if we want to add functionality to our callbacks
-	REACTOR_add_job(instruction_funcs[0], send_instruction_response_cb, task);
+	REACTOR_add_job((void (*) (void *)) instruction_funcs[0], (void (*) (void *)) send_instruction_response_cb, task);
 	return 0;
 }
 

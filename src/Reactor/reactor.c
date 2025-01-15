@@ -161,7 +161,7 @@ get_fd_handler(int fd)
 		temp_handler = temp_handler->next_handler;
 	}
 	
-	return -1;
+	return NULL;
 }
 
 void
@@ -171,9 +171,9 @@ call_signaled_handlers(struct pollfd* fds)
 
 	for (int i = 0; i < Agent->handler_list->size; i++) {
 		if ((POLLRDNORM | POLLERR) & fds[i].revents) {
-			if ((handler = get_fd_handler(fds[i].fd)) != -1) {
-				REACTOR_add_job(handler->event_handler, 
-						handler->event_handler_cb,
+			if ((handler = get_fd_handler(fds[i].fd)) != NULL) {
+				REACTOR_add_job((void (*) (void *)) handler->event_handler, 
+						(void (*) (void *)) handler->event_handler_cb,
 						handler->data);	
 				free(fds);
 			}

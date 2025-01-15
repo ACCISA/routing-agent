@@ -17,7 +17,7 @@ typedef struct command {
 	int command_num;
 	int (*command_func)(void* data);
 	int (*command_cb)(void* data);
-	struct commands* next_command;
+	struct command* next_command;
 } command_t;
 
 typedef struct commands_list {
@@ -30,6 +30,7 @@ typedef int (*func_ptr_type)(void*);
 func_ptr_type* get_instruction(int instruction);
 command_t* create_command(int command_num, int (*command_func)(void* data),
 		int (*command_cb)(void* data));
+int add_command(command_t* command);
 int get_instruction_cb(int instruction);
 int initialize_commands(void);
 

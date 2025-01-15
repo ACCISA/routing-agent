@@ -3,6 +3,8 @@
 #include "../Utils/utils.h"
 #include "../Queue/queue.h"
 #include "../Reactor/reactor.h"
+#include "../Utils/utils.h"
+#include "../Utils/error.h"
 #include "../globals.h"
 
 #include <stdio.h>
@@ -57,7 +59,7 @@ add_command(command_t* command)
 		Agent->commands_list->command = command;
 		Agent->commands_list->size++;
 		print_info("INSTRUCTOR - Registered new command");
-		return;
+		return 0;
 	}
 
 	command_t* temp_command = Agent->commands_list->command;

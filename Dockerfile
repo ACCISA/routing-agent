@@ -7,7 +7,7 @@ COPY . .
 
 WORKDIR src
 RUN make
-
-CMD ["./test_program"]
+CMD ["ls"]
+CMD ["./main tests/config2"]
 
 
