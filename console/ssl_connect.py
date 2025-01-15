@@ -64,8 +64,8 @@ for i in range(0,10):
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
 
-    with socket.create_connection(('localhost', 2222)) as sock:
-        with context.wrap_socket(sock, server_hostname='localhost') as tls_conn:
+    with socket.create_connection(('172.17.0.2', 2222)) as sock:
+        with context.wrap_socket(sock, server_hostname='172.17.0.2') as tls_conn:
             tls_conn.sendall(encrypted_data)
             response = tls_conn.recv(1024)
             print(response)
