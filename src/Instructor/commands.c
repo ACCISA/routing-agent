@@ -21,9 +21,7 @@ get_hostname_command(void* data)
 		task->result = "n/a";
 		return -1;
 	}
-	printf("test task %s\n", hostname);
 	task->result = hostname;
-	printf("test task2 %s\n", hostname);
 	return 0;
 }
 
@@ -41,6 +39,7 @@ print_agent_info_command(void* data)
 	task_t* task = (task_t*)data;
 	task->result = "completed";
 	display_agent_info();
+	return 0;
 }
 
 int
@@ -48,4 +47,5 @@ print_agent_info_command_cb(void* data)
 {
 	print_info("INSTRUCTOR - Running print_agent_info_command_cb");
 	REACTOR_add_job((void (*) (void *)) send_routing_data, (void (*) (void *)) send_routing_data_cb, (task_t*)data);
+	return 0;
 }
