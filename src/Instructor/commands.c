@@ -7,20 +7,24 @@
 #include "../Utils/error.h"
 #include "../globals.h"
 
+#include <limits.h>
+
 int
 get_hostname_command(void* data)
 {
 	task_t* task = (task_t*)data;
 	
+	char hostname[HOST_NAME_MAX+1];
 
-	char* hostname = (char*)malloc(sizeof(char)*40);
 	print_info("TASK - Running hostname task");
-
-	if (gethostname(hostname, sizeof(hostname)) == 0) {
-		task->result = hostname;
-		return 0;
+	if (gethostname(hostname, sizeof(hostname)) != 0) {
+		task->result = "n/a";
+		return -1;
 	}
-	return -1;
+	printf("test task %s\n", hostname);
+	task->result = hostname;
+	printf("test task2 %s\n", hostname);
+	return 0;
 }
 
 int

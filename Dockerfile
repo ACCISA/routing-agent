@@ -6,7 +6,7 @@ ENV KEY_FILE=src/key.pem
 ENV CERT_FILE=src/cert.pem
 ENV CSR_FILE=src/csr.pem
 
-RUN apt-get update && apt-get install -y libssl-dev openssl net-tools iproute2
+RUN apt-get update && apt-get install -y libssl-dev openssl net-tools iproute2 gdb vim
 
 COPY . .
 
