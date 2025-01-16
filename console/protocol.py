@@ -5,27 +5,55 @@ class Protocol:
 
     def is_destination(self):
         return int.from_bytes(self.bytes[0:1], byteorder='little')
+    
+    def set_destination(self, val):
+        if val is True: self.bytes[0:1] = 0x01
+        if val is False: self.bytes[0:1] = 0x00
 
     def is_forward(self):
         return int.from_bytes(self.bytes[1:2], byteorder='little')
+    
+    def set_forward(self, val):
+        if val is True: self.bytes[1:2] = 0x01
+        if val is False: self.bytes[1:2] = 0x00
 
     def has_response(self):
         return int.from_bytes(self.bytes[2:3], byteorder='little')
+    
+    def set_has_response(self, val):
+        if val is True: self.bytes[2:3] = 0x01
+        if val is False: self.bytes[2:3] = 0x00
 
     def instruction(self):
         return int.from_bytes(self.bytes[3:4], byteorder='little')
+    
+    def set_instruction(self, val):
+        if val is True: self.bytes[3:4] = 0x01
+        if val is False: self.bytes[3:4] = 0x00
 
     def num_sections(self):
         return int.from_bytes(self.bytes[4:8], byteorder='little')
 
+    def set_num_sections(self, val):
+        self.bytes[4:8] = val
+
     def cur_section(self):
         return int.from_bytes(self.bytes[8:12], byteorder='little')
     
+    def set_cur_section(self, val):
+        self.bytes[8:12] = val
+    
     def response_len(self):
         return int.from_bytes(self.bytes[12:16], byteorder='little')
+    
+    def set_response_len(self, val):
+        self.bytes[12:16] = val
 
     def msg_id(self):
         return int.from_bytes(self.bytes[16:20], byteorder='little')
+
+    def set_msg_id(self, val):
+        self.bytes[16:20] = val
 
     def sections_len(self):
         sections_len = []
@@ -33,6 +61,9 @@ class Protocol:
         for i in range(0, self.num_sections()):
             sections_len.append(self.bytes[20+idx:20+idx+4])
         return sections_len
+    
+    def set_sections_len(self, arr):
+        pass
 
 
 
